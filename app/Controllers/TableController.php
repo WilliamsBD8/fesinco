@@ -17,6 +17,9 @@ use App\Models\CreditRate;
 use App\Models\User;
 use App\Models\Pqr;
 
+use App\Models\ExtractsContributions;
+use App\Models\ExtractsWallet;
+
 use CodeIgniter\Exceptions\PageNotFoundException;
 
 class TableController extends BaseController
@@ -73,11 +76,15 @@ class TableController extends BaseController
                     $this->crud->setFieldUpload('photo', 'assets/upload/images', base_url(['assets/upload/images']));
                     break;
                 case 'extracts':
+                    $e_model = new Extract();
+                    $extract = $e_model->where(['date' => date('Y-m-d')])->countAllResults();
+                    if($extract != 0)
+                        $this->crud->unsetAdd();
                     $this->crud->displayAs([
                         'date'                  => 'Fecha de carga',
                         'contributions_file'    => 'Archivo Aportes',
                         'wallet_file'           => 'Archivo Cartera',
-                        'status'                => 'Status',
+                        'status'                => 'Estado',
                         'observation'           => 'Observación',
                         'consecutive'           => 'N° Consecutivo'
                     ]);
@@ -101,6 +108,25 @@ class TableController extends BaseController
                         $stateParameters->data['consecutive'] = ++$extract_last->consecutive;
                         return $stateParameters;
                     });
+
+                    $this->crud->callbackDelete(function ($stateParameters) {
+                        $e_model = new Extract();
+                        $extract = $e_model->where(['id' => $stateParameters->primaryKeyValue])->first();
+
+                        $ec_model = new ExtractsContributions();
+                        $ew_model = new ExtractsWallet();
+
+                        $ec_model->like('fecha_cargue', "{$extract->date}")->delete();
+                        $ew_model->like('fecha_cargue', "{$extract->date}")->delete();
+
+                        $e_model->save([
+                            'id'        => $stateParameters->primaryKeyValue,
+                            'status'    => 'Anulado'
+                        ]);
+                        
+                        return $stateParameters;
+                      });
+
                     // $this->crud->unsetDelete();
                     break;
                 case 'security_rates':
@@ -133,14 +159,14 @@ class TableController extends BaseController
 
                     break;
                 case 'credits':
+                    $this->crud->defaultOrdering('created_at', 'DESC');
                     if(session('user')->role_id == 3){
                         $this->crud->where(['user_id' => session('user')->id]);
-                        $this->crud->unsetOperations();
-                    }else{
                         $this->crud->unsetAdd();
                         $this->crud->unsetDelete();
+                    }else{
+                        $this->crud->unsetOperations();
                     }
-                    $this->crud->unsetColumns(['updated_at']);
                     $this->crud->setRelation('user_id', 'users', 'name');
                     $this->crud->setRelation('credit_status_id', 'credit_status', 'name');
                     $this->crud->callbackColumn('credit_rate_id', function($value, $row){
@@ -166,8 +192,26 @@ class TableController extends BaseController
                         'created_at'        => 'Fecha de creación',
                         'pledge'            => 'Pignoración',
                         'co_signer'         => 'Codeudor',
-                        'observation'       => 'Observación'
+                        'observation'       => 'Observación',
+                        'updated_at'        => 'Acciones'
                     ]);
+
+                    $this->crud->callbackColumn('updated_at', function ($value, $row) {
+                        $buttons = '';
+                        if(session('user')->role_id == 3 && $row->credit_status_id == 1){
+                            $buttons .= '<a onclick="credit_solicit('.$row->id.')" class="indigo-text tooltipped" data-position="bottom" data-tooltip="Solicitar Crédito" href="javascript:void(0);"><i class="material-icons">send</i></a>';
+                        }else if((session('user')->role_id == 2 || session('user')->role_id == 1) && $row->credit_status_id == 2){
+                            $buttons .= '
+                                <a onclick="credit_solicit('.$row->id.', 3)" class="green-text tooltipped" data-position="bottom" data-tooltip="Aprobar Crédito" href="javascript:void(0);"><i class="material-icons">check</i></a>
+                                <a onclick="credit_solicit('.$row->id.', 4)" class="red-text tooltipped" data-position="bottom" data-tooltip="Rechazar Crédito" href="javascript:void(0);"><i class="material-icons">close</i></a>
+                            ';
+                        }
+                        return $buttons;
+                    });
+
+                    
+                    $this->crud->editFields(['quota', 'value', 'pledge', 'co_signer', 'observation']);
+
                     break;
                 case 'users':
                     $this->crud->displayAs([
@@ -203,11 +247,37 @@ class TableController extends BaseController
                     break;
 
                 case 'pqrs':
-                    $this->crud->unsetOperations();
+                    if(session('user')->role_id == 3){
+                        $this->crud->unsetDelete();
+                        $this->crud->where(['user_id' => session('user')->id]);
+                    }else{
+                        $this->crud->unsetOperations();
+                    }
+                    $this->crud->setActionButton('Avatar', 'fa fa-bars', function ($row) {
+                        return base_url(['table', 'pqrs', $row->id]);
+                    }, false);
+
+                    
+                    $this->crud->unsetAddFields(['user_id', 'created_at', 'status', 'updated_at']);
+                    $this->crud->unsetEditFields(['user_id', 'created_at', 'status', 'updated_at']);
+                    
+                    $this->crud->callbackBeforeInsert(function ($stateParameters) {
+                        $stateParameters->data['created_at'] = date('Y-m-d');
+                        $stateParameters->data['updated_at'] = date('Y-m-d');
+                        $stateParameters->data['user_id'] = session('user')->id;
+                        return $stateParameters;
+                    });
+
+                    $this->crud->callbackBeforeUpdate(function ($info){
+                        $info->data['updated_at']   = date('Y-m-d H:i:s');
+                        return $info;
+                    });
+                    
                     $this->crud->displayAs([
                         'user_id'       => 'Usuario',
                         'observation'   => 'PQR',
                         'status'        => 'Estado',
+                        'type'          => 'Motivo',
                         'creadted_at'   => 'Fecha de creación',
                         'updated_at'    => 'Fecha de respuesta'
                     ]);
@@ -217,11 +287,11 @@ class TableController extends BaseController
                             return 'Sin revisar';
                         return $value;
                     });
-                    $this->crud->setActionButton('Avatar', 'fa fa-bars', function ($row) {
-                        return base_url(['table', 'pqrs', $row->id]);
-                    }, false);
+
                     
                     $this->crud->setRelation('user_id', 'users', 'name');
+                    $this->crud->setTexteditor(['observation']);
+                    
 
                     break;
 
@@ -429,6 +499,9 @@ class TableController extends BaseController
                         return $info;
                     });
                     $this->crud->unsetDelete();
+                    if(session('user')->role_id == 3)
+                        $this->crud->unsetOperations();
+
                     break;
                 default:
                 break;   

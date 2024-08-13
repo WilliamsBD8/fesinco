@@ -28,3 +28,8 @@
 a{
   color: var(--primary-color);
 }
+
+
+.user-view .background img{
+  height: 100%;
+}

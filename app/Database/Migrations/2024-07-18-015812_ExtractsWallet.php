@@ -11,12 +11,12 @@ class ExtractsWallet extends Migration
         $this->forge->addField([
 			'id'            => ['type' => 'INT', 'constraint' => 11, 'unsigned' => TRUE, 'auto_increment'  => TRUE],
             'user_id'       => ['type' => 'INT', 'constraint' => 11, 'unsigned' => TRUE, 'null' => TRUE],
+			'line_credit_extract_id'	 => ['type' => 'INT', 'constraint' => 11, 'unsigned' => TRUE, 'null' => TRUE],
 			'registro'      => ['type' => 'INT', 'constraint' => 11],
 			'feccorte'      => ['type' => 'DATE', 'null' => TRUE],
 			'fecsolici'     => ['type' => 'DATE', 'null' => TRUE],
 			'fecfinal'      => ['type' => 'DATE', 'null' => TRUE],
 			'numero'        => ['type' => 'INT', 'constraint' => 11, 'null' => TRUE],
-			'codigo'        => ['type' => 'VARCHAR', 'constraint' => 10],
 			'tasanual'      => ['type' => 'DECIMAL', 'constraint' => '5,2', 'null' => TRUE],
 			'tasmes'        => ['type' => 'DECIMAL', 'constraint' => '5,2', 'null' => TRUE],
 			'valor'         => ['type' => 'INT', 'constraint' => 11, 'null' => TRUE],
@@ -29,6 +29,7 @@ class ExtractsWallet extends Migration
 		]);
 		$this->forge->addKey('id', TRUE);
 		$this->forge->addForeignKey('user_id', 'users', 'id');
+		$this->forge->addForeignKey('line_credit_extract_id', 'line_credit_extracts', 'id');
 		$this->forge->createTable('extracts_wallet');
     }
 

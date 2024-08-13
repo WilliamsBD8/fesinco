@@ -6227,6 +6227,8 @@ GroceryCrud.prototype.renderDatagridBody = function renderDatagridBody(rows) {
         rows: rows,
         columns: this.columns
     });
+    $('.material-tooltip').remove();
+    $('.tooltipped').tooltip();
 };
 
 exports.GroceryCrud = GroceryCrud;
