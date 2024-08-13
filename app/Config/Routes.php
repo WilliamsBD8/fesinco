@@ -50,6 +50,12 @@ $routes->group('dashboard', function ($routes){
 	$routes->post('simulate_credit', 'DashboardController::create_simulate');
 	$routes->post('credits/create', 'DashboardController::create_credit');
 	$routes->get('credits', 'DashboardController::credits');
+	$routes->post('credits/updated', 'DashboardController::updated_credit');
+
+	$routes->post('extracts/load', 'DashboardController::load_extracts');
+	$routes->get('extracts', 'DashboardController::extracts');
+	$routes->get('extracts/(:segment)', 'DashboardController::extracts/$1');
+	$routes->post('extracts/view', 'DashboardController::extracts_view');
 
 	// PDF
 	$routes->post('generate_pdf', 'DashboardController::generate_pdf');

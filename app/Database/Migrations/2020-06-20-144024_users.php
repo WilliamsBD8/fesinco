@@ -12,12 +12,14 @@ class Users extends Migration
 			'email'     			=> ['type' => 'VARCHAR', 'constraint' => 100],
 			'username'  			=> ['type' => 'VARCHAR', 'constraint' => 40],
 			// 'password'  			=> ['type' => 'VARCHAR', 'constraint' => 100],
-			'identification'  => ['type' => 'VARCHAR', 'constraint' => 100],
-			'phone'  					=> ['type' => 'VARCHAR', 'constraint' => 20, 'null' => TRUE],
+			'identification'  		=> ['type' => 'VARCHAR', 'constraint' => 100],
+			'phone'  				=> ['type' => 'VARCHAR', 'constraint' => 20, 'null' => TRUE],
 			'position'  			=> ['type' => 'VARCHAR', 'constraint' => 100, 'null' => TRUE],
 			'status'    			=> ['type' => 'ENUM("active", "inactive")', 'default' => 'inactive'],
 			'photo'     			=> ['type' => 'VARCHAR', 'constraint' => 100, 'null' => TRUE],
-			'role_id'   			=> ['type' => 'INT', 'constraint' => 11, 'unsigned' => TRUE]
+			'role_id'   			=> ['type' => 'INT', 'constraint' => 11, 'unsigned' => TRUE],
+            'created_at'			=> ['type' => 'DATETIME', 'null' => TRUE],
+            'updated_at'			=> ['type' => 'DATETIME', 'null' => TRUE]
 		]);
 		$this->forge->addKey('id', TRUE);
 		$this->forge->addForeignKey('role_id', 'roles', 'id');

@@ -4,12 +4,7 @@
             <div class="nav-wrapper">
                 <ul class="navbar-list right">
                     <li class="hide-on-large-only search-input-wrapper"><a class="waves-effect waves-block waves-light search-button" href="javascript:void(0);"><i class="material-icons">search</i></a></li>
-                    <li><a class="waves-effect waves-block waves-light notification-button" href="javascript:void(0);"
-                           data-target="notifications-dropdown"><i class="material-icons">notifications_none
-                                <?php if(countNotification() > 0): ?>
-                                    <small class="notification-badge"><?= countNotification() ?></small>
-                                <?php endif; ?>
-                            </i></a></li>
+                    
                     <li><a class="waves-effect waves-block waves-light profile-button" href="javascript:void(0);"
                            data-target="profile-dropdown"><span class="avatar-status avatar-online"><img  style="height: 29px !important;"
                                         src="<?= session('user') && session('user')->photo ? base_url(['assets/img/users', session('user')->photo]) : base_url().'/assets/img/'.'user.png' ?>" alt="avatar">

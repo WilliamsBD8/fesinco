@@ -9,7 +9,7 @@ class ExtractsWallet extends Model
     protected $table            = 'extracts_wallet';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
-    protected $returnType       = 'array';
+    protected $returnType       = 'object';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
     protected $allowedFields    = [
@@ -19,7 +19,7 @@ class ExtractsWallet extends Model
         'fecsolici',
         'fecfinal',
         'numero',
-        'codigo',
+        'line_credit_extract_id',
         'tasanual',
         'tasmes',
         'valor',
@@ -56,4 +56,9 @@ class ExtractsWallet extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+
+    public function getLineCreditExtract($id){
+        $line = $this->builder('line_credit_extracts')->where(['id' => $id])->get()->getResult();
+        return $line[0];
+    }
 }
