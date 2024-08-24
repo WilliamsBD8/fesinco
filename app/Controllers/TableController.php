@@ -77,7 +77,9 @@ class TableController extends BaseController
                     break;
                 case 'extracts':
                     $e_model = new Extract();
-                    $extract = $e_model->where(['date' => date('Y-m-d')])->countAllResults();
+                    $extract = $e_model
+                        ->whereIn('status', ['Para cargar', 'Cargado'])
+                        ->where(['date' => date('Y-m-d')])->countAllResults();
                     if($extract != 0)
                         $this->crud->unsetAdd();
                     $this->crud->displayAs([
@@ -99,13 +101,13 @@ class TableController extends BaseController
                     $this->crud->callbackColumn('wallet_file', function ($value, $row) {
                         return "<a href='".base_url(['upload/extracts', $value])."'>$value</a>";
                     });
-                    $this->crud->unsetAddFields(['date', 'consecutive']);
-                    $this->crud->unsetEditFields(['date', 'consecutive']);
+                    $this->crud->unsetAddFields(['status', 'date', 'consecutive']);
+                    $this->crud->unsetEditFields(['status', 'date', 'consecutive']);
                     $this->crud->callbackBeforeInsert(function ($stateParameters) {
                         $stateParameters->data['date'] = date('Y-m-d');
                         $e_model = new Extract();
                         $extract_last = $e_model->orderby('id', 'DESC')->first();
-                        $stateParameters->data['consecutive'] = ++$extract_last->consecutive;
+                        $stateParameters->data['consecutive'] = empty($extract_last) ? 1 : ++$extract_last->consecutive;
                         return $stateParameters;
                     });
 
@@ -125,7 +127,70 @@ class TableController extends BaseController
                         ]);
                         
                         return $stateParameters;
-                      });
+                    });
+
+                    $this->crud->callbackUpload(function ($uploadData)  {
+                        // Hardcoded paths. Please make sure that in case you just copy the below code 
+                        // that you replace these two variables with yours
+                        $uploadPath = 'upload/extracts'; // directory of the drive
+                        $publicPath = base_url(['upload/extracts']); // public directory (at the URL)
+                    
+                        $fieldName = $uploadData->field_name;
+                    
+                        $storage = new \Upload\Storage\FileSystem($uploadPath);
+                        $file = new \Upload\File($fieldName, $storage);
+                    
+                        $filename = isset($_FILES[$fieldName]) ? $_FILES[$fieldName]['name'] : null;
+                    
+                        if ($filename === null) {
+                            return false;
+                        }
+                    
+                        // The library that we are using want us to remove the file 
+                        // extension as it is adding it by itself!
+                        $filename = preg_replace('/\\.[^.\\s]{3,4}$/', '', $filename);
+                        // Replace illegal characters with an underscore
+                        $filename = preg_replace("/([^a-zA-Z0-9\-\_]+?){1}/i", '_', $filename);
+
+                        $filename = generarCodigoRandom(5)."_{$filename}";
+                    
+                        $file->setName($filename);
+                    
+                        // Validate file upload
+                        $file->addValidations([
+                            new \Upload\Validation\Extension(['csv']),
+                            new \Upload\Validation\Size('20M')
+                        ]);
+                    
+                        // Work around so the try catch will work as expected.
+                        // Upload file will not yield any error if the error_reporting is 0
+                        $display_errors = ini_get('display_errors');
+                        $error_reporting = error_reporting();
+                        ini_set('display_errors', 'on');
+                        error_reporting(E_ALL);
+                    
+                        // Upload file
+                        try {
+                            // Success!
+                            $file->upload();
+                    
+                        } catch (\Upload\Exception\UploadException $e) {
+                            // Upload error, return a custom message
+                            $errors = print_r($file->getErrors(), true);
+                            return (new \GroceryCrud\Core\Error\ErrorMessage())
+                                         ->setMessage("There was an error with the upload:\n" . $errors);
+                        } catch (\Exception $e) {
+                            throw $e;
+                        }
+                    
+                        $filename = $file->getNameWithExtension();
+                    
+                        // Make sure that you return the results
+                        $uploadData->filePath = $publicPath . '/' . $filename;
+                        $uploadData->filename = $filename;
+                    
+                        return $uploadData;
+                    });
 
                     // $this->crud->unsetDelete();
                     break;
@@ -296,6 +361,95 @@ class TableController extends BaseController
                     break;
 
 
+                // Info Pagina
+
+                case 'info_creditos':
+                    $this->crud->where(['category_id' => 1]);
+                    $this->crud->displayas([
+                        'title'             => 'Titulo',
+                        'description'       => 'Descrpción',
+                        'img'               => 'Imagen',
+                        'position'          => 'Posición',
+                        'status'            => 'Estado',
+                        'credit_simulation' => 'Simular Créditos'
+                    ]);
+                    $this->crud->setFieldUpload('img', 'page/img/sections', base_url(['page/img/sections']));
+                    $this->crud->setTexteditor(['description']);
+                    $this->crud->unsetDelete();
+                    $this->crud->setActionButton('Avatar', 'fa fa-bars', function ($row) {
+                        return base_url(['table', 'info_creditos', $row->id]);
+                    }, false);
+
+                    $this->crud->columns(['title', 'description', 'img', 'position', 'status', 'credit_simulation']);
+                    $this->crud->unsetEditFields(['category_id']);
+                    $this->crud->unsetAddFields(['category_id']);
+
+                    $this->crud->callbackBeforeInsert(function ($stateParameters) {
+                        $stateParameters->data['category_id'] = 1;
+                        return $stateParameters;
+                    });
+
+                    break;
+
+                case 'convenios':
+                    $this->crud->where(['category_id' => 2]);
+                    $this->crud->columns(['title', 'description', 'img', 'status']);
+                    $this->crud->displayas([
+                        'title'             => 'Titulo',
+                        'description'       => 'Descrpción',
+                        'img'               => 'Imagen',
+                        'position'          => 'Posición',
+                        'status'            => 'Estado'
+                    ]);
+                    $this->crud->callbackBeforeInsert(function ($stateParameters) {
+                        $stateParameters->data['category_id'] = 2;
+                        return $stateParameters;
+                    });
+                    
+                    $this->crud->setFieldUpload('img', 'page/img/agreements', base_url(['page/img/agreements']));
+                    
+                    $this->crud->unsetEditFields(['category_id', 'credit_simulation', 'position', 'status']);
+                    $this->crud->unsetAddFields(['category_id', 'credit_simulation', 'position', 'status']);
+
+                    $s_model = new Section();
+                    $section = $s_model->where(['category_id' => 2])->countAllResults();
+
+                    if($section == 1)
+                        $this->crud->unsetAdd();
+                    $this->crud->unsetDelete();
+                    $this->crud->setTexteditor(['description']);
+                    $this->crud->setActionButton('Avatar', 'fa fa-bars', function ($row) {
+                        return base_url(['table', 'convenios', $row->id]);
+                    }, false);
+                    break;
+                case 'publicaciones':
+                    $this->crud->where(['category_id' => 4]);
+                    $this->crud->columns(['title', 'description', 'img', 'position', 'status']);
+                    $this->crud->displayas([
+                        'title'             => 'Titulo',
+                        'description'       => 'Descrpción',
+                        'img'               => 'Imagen',
+                        'position'          => 'Posición',
+                        'status'            => 'Estado'
+                    ]);
+                    $this->crud->callbackBeforeInsert(function ($stateParameters) {
+                        $stateParameters->data['category_id'] = 4;
+                        return $stateParameters;
+                    });
+                    
+                    $this->crud->setFieldUpload('img', 'page/img/publications', base_url(['page/img/publications']));
+                    
+                    $this->crud->unsetEditFields(['category_id', 'credit_simulation']);
+                    $this->crud->unsetAddFields(['category_id', 'credit_simulation']);
+
+                    $this->crud->unsetDelete();
+                    $this->crud->setTexteditor(['description']);
+                    $this->crud->setActionButton('Avatar', 'fa fa-bars', function ($row) {
+                        return base_url(['table', 'publicaciones', $row->id]);
+                    }, false);
+                    break;
+
+
                 case 'junta_directiva':
                 case 'comite':
                 case 'gerente':
@@ -340,27 +494,30 @@ class TableController extends BaseController
                     break;
                 case 'home_galery':
                     $this->crud->displayas([
-                        'img'       => 'Imagen',
-                        'position'  => 'Posición',
-                        'status'    => 'Estado'
-                    ]);
-                    $this->crud->setFieldUpload('img', 'page/img/sliders', base_url(['page/img/sliders']));
-                    break;
-                case 'sections':
-                    $this->crud->displayas([
-                        'title'         => 'Titulo',
-                        'description'   => 'Descrpción',
                         'img'           => 'Imagen',
                         'position'      => 'Posición',
+                        'title'         => 'Titulo',
+                        'description'   => 'Descripción',
                         'status'        => 'Estado'
                     ]);
-                    $this->crud->setFieldUpload('img', 'page/img/sections', base_url(['page/img/sections']));
+                    $this->crud->setFieldUpload('img', 'page/img/sliders', base_url(['page/img/sliders']));
                     $this->crud->setTexteditor(['description']);
-                    $this->crud->unsetDelete();
-                    $this->crud->setActionButton('Avatar', 'fa fa-bars', function ($row) {
-                        return base_url(['table', 'sections', $row->id]);
-                    }, false);
                     break;
+                // case 'sections':
+                //     $this->crud->displayas([
+                //         'title'         => 'Titulo',
+                //         'description'   => 'Descrpción',
+                //         'img'           => 'Imagen',
+                //         'position'      => 'Posición',
+                //         'status'        => 'Estado'
+                //     ]);
+                //     $this->crud->setFieldUpload('img', 'page/img/sections', base_url(['page/img/sections']));
+                //     $this->crud->setTexteditor(['description']);
+                //     $this->crud->unsetDelete();
+                //     $this->crud->setActionButton('Avatar', 'fa fa-bars', function ($row) {
+                //         return base_url(['table', 'sections', $row->id]);
+                //     }, false);
+                //     break;
                 case 'contact_topics':
                     $this->crud->displayAs([
                         'title'         => 'Titulo',
@@ -421,14 +578,16 @@ class TableController extends BaseController
         if($data) {
             $this->crud->setTable($data);
             switch ($data) {
-                case 'sections':
+                case 'info_creditos':
+                case 'convenios':
                     $this->crud->setTable('section_details');
-                    $title = 'Detalles';
+                    $s_model = new Section();
+                    $section = $s_model->where(['id' => $this->id])->first();
+                    $title = $section->title;
                     $this->crud->setRelation('section_id', 'sections', 'title', ['id' => $id]);
                     $this->crud->displayas([
                         'section_id'        => 'Sección',
                         'title'             => 'Titulo',
-                        'description_short' => 'Descripción Corta',
                         'description'       => 'Descripción',
                         'specification'     => 'Especificaciones',
                         'img'               => 'Imagen',
@@ -436,6 +595,8 @@ class TableController extends BaseController
                         'status'            => 'Estado'
                     ]);
                     $this->crud->setTexteditor(['description_short', 'description', 'specification']);
+                    if($data == 'convenios')
+                        $this->crud->setFieldUpload('img', 'page/img/agreements', base_url(['page/img/agreements']));
                     $this->crud->setFieldUpload('img', 'page/img/sections', base_url(['page/img/sections']));
                     break;
                 case 'afiliados':

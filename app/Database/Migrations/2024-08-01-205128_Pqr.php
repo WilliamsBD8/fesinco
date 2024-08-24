@@ -13,6 +13,7 @@ class Pqr extends Migration
             'user_id'           => ['type' => 'INT', 'constraint' => '11', 'unsigned' => TRUE, 'null' => TRUE],
             'observation'       => ['type' => 'TEXT'],
             'status'            => ['type' => 'ENUM("Por revisar", "Revisado")', 'default' => 'Por revisar'],
+            'type'              => ['type' => 'ENUM("Petición", "Queja", "Reclamo", "Sugerencia")', 'default' => 'Petición'],
             'created_at'        => ['type' => 'DATETIME', 'null' => TRUE],
             'updated_at'        => ['type' => 'DATETIME', 'null' => TRUE]
         ]);

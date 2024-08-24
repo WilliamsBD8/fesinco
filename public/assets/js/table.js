@@ -6,7 +6,10 @@ async function extract_load(){
         let info = await proceso_fetch(url, JSON.stringify({}));
         M.Toast.dismissAll();
         if(info.status){
-            alert(info.message, 'green');
+            Swal.fire({
+                icon: 'success',
+                title: info.message,
+            })
             $('.fa-refresh').trigger('click');
         }
         else{
@@ -17,8 +20,19 @@ async function extract_load(){
                     html: uniqueData.join(', ')
                 })
                 console.log(uniqueData);
+            }else if("errors_format" in info){
+                let respond = "<ul>";
+                respond += info.errors_format.map(li => `<li>${li}</li>`);
+                Swal.fire({
+                    icon: 'warning',
+                    title: "Error en el formato en los archivos.",
+                    html: respond
+                })
             }else{ 
-                alert(info.message, 'orange');
+                Swal.fire({
+                    icon: 'warning',
+                    title: info.message,
+                })
             }
         }
     }, 3000)

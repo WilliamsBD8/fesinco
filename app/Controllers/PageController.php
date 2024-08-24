@@ -6,6 +6,9 @@ use App\Models\User;
 use App\Models\About;
 use App\Models\Role;
 use App\Models\HomeGalery;
+
+use App\Models\Category;
+
 use App\Models\Section;
 use App\Models\SectionDetail;
 use App\Models\Agreement;
@@ -18,20 +21,29 @@ class PageController extends BaseController
 	{
 		$hg_model = new HomeGalery();
 		$imgs = $hg_model->where(['status' => 'active'])->orderBy('position', 'ASC')->findAll();
+
+		$c_model = new Category();
+		$category_1 = $c_model->where(['id' => 1])->first();
+		$category_1->details = $c_model->getSection(1);
+
+		$a_model = new About();
+		$about = $a_model->find(1);
+
 		$s_model = new Section();
-		$sections = $s_model->where(['status' => 'active'])->orderBy('position', 'ASC')->findAll();
-		$a_model = new Agreement();
-		$agreement = $a_model->first();
-		$ad_model = new AgreementDetail();
-		$agreement_details = $ad_model->where(['status' => 'active'])->orderBy('position', 'ASC')->findAll();
+		$agreement = $s_model->where(['category_id' => 2, 'status' => 'active'])->orderBy('position', 'ASC')->first();
+		$agreement->details = $s_model->getDetails($agreement->id);
 
-		$agreement_details = array_chunk($agreement_details, 4);
+		$publication = $c_model->where(['id' => 4])->first();
+		$publication->details = $c_model->getSection($publication->id);
 
-    return  view('landings/home', [
-			'imgs'							=> $imgs,
-			'sections'					=> $sections,
-			'agreement'					=> $agreement,
-			'agreement_details' => $agreement_details
+		// var_dump($publication); die;
+
+    	return  view('landings/home', [
+			'imgs'			=> $imgs,
+			'category_1'	=> $category_1,
+			'about'			=> $about,
+			'agreement'		=> $agreement,
+			'publication'	=> $publication
 		]);
 	}
 
@@ -60,31 +72,69 @@ class PageController extends BaseController
 
 	public function section($id){
 		$s_model = new Section();
-		$section = $s_model->where(['id' => $id])->first();
-		$sections = $s_model->where(['id !=' => $id])->findAll();
-		// var_dump($sections); die;
 		$sd_model = new SectionDetail();
-		$details = $sd_model->where(['section_id' => $id, 'status' => 'active'])->findAll();
+		$section = $s_model->where(['id' => $id])->first();
+		$section->details = $sd_model->where(['section_id' => $section->id, 'status' => 'active'])->orderBy('position', 'ASC')->paginate(2, '');
+		$section->pager = $sd_model->pager;
+		$sections = $s_model
+			->select([
+				'sections.*',
+				'COUNT(section_details.id) as total'
+			])
+			->join('section_details', 'section_details.section_id = sections.id', 'left')
+			->where(['sections.id !=' => $id, 'sections.category_id' => $section->category_id])
+			->groupBy('sections.id')->findAll();
+
+		$ids = array_map(function($objeto) {
+			return $objeto->id;
+		}, $section->details);
+		
+		// var_dump($section); die;
+
+		if(!empty($ids))
+			$sec_recient = $s_model->getDetailsBasic($id)
+				->whereNotIn('id', $ids)
+				->orderBy('id', 'DESC')
+				->limit(5)->get()->getResult();
+		else $sec_recient = [];
 		return view('landings/section', [
 			'section' 	=> $section,
-			'details'		=> $details,
-			'sections'	=> $sections
+			'sections'	=> $sections,
+			'recents'	=> $sec_recient
 		]);
 	}
 
 	public function section_detail($id){
-		$s_model = new SectionDetail();
-		$section = $s_model
-			->select(['section_details.*', 'sections.title as section'])
+		$sd_model = new SectionDetail();
+		$s_model = new Section();
+		$section = $sd_model
+			->select(['section_details.*', 'sections.title as section', 'sections.category_id as category_id'])
 			->where(['section_details.id' => $id])
 			->join('sections', 'sections.id = section_details.section_id', 'left')
 		->first();
+		
+		// var_dump($section); die;
 
-		$sections = $s_model->where(['section_id' => $section->section_id])->findAll();
+		$sections = $s_model
+			->select([
+				'sections.*',
+				'COUNT(section_details.id) as total'
+			])
+			->join('section_details', 'section_details.section_id = sections.id', 'left')
+			->where(['sections.id !=' => $section->section_id, 'sections.category_id' => $section->category_id])
+			->groupBy('sections.id')->findAll();
+
+		$sec_recient = $s_model->getDetailsBasic($section->section_id)
+			->whereNotIn('id', [$id])
+			->orderBy('id', 'DESC')
+			->limit(5)->get()->getResult();
+			
+		// var_dump([$sec_recient, $id]); die;
 
 		return view('landings/section_detail', [
-			'section'		=> $section,
-			'sections'	=> $sections
+			'section'	=> $section,
+			'sections'	=> $sections,
+			'recents'	=> $sec_recient
 		]);
 	}
 

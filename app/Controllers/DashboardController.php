@@ -118,7 +118,7 @@ class DashboardController extends BaseController
 	}
 
 	public function load_extracts(){
-		$request = $this->request->getJson();
+		// $request = $this->request->getJson();
 		$e_model = new Extract();
 		$extracts = $e_model->where(['status' => 'Para cargar'])->findAll();
 		if(count($extracts) == 1){
@@ -132,6 +132,11 @@ class DashboardController extends BaseController
 
 			$errors = [];
 			$wallets_data = [];
+			$contrib_data = [];
+
+			$error_format = [];
+
+			$new_users = 0;
 
 			if(file_exists($file_wal)){
 				$wallets = fopen($file_wal, "r");
@@ -146,23 +151,109 @@ class DashboardController extends BaseController
 							}
 							if($line_credit == 0)
 								$errors[] =  $data[6];
-
 							$wallets_data[] = $data;
+						}else{
+							if(count($data) != 14)
+								$error_format[] = "Error al leer los datos del archivo de cartera.";
 						}
 						$aux_cont++;
 					}
 				}
+			} else {
+				return $this->respond([
+					'message' 	=> "El archivo {$extract->wallet_file} no existe.",
+					'file' 		=> $file_wal,
+					'status'	=> false
+				]);
+			}
 
-				// Validamos si existen todos los codigos de LineCreditExtract
+			if (file_exists($file_con)) {
+				$contributions = fopen($file_con, "r");
+				if($contributions){
+					$aux_cont=0;
+					while (($data = fgetcsv($contributions, 1000, ";")) !== FALSE) {
+						if($aux_cont == 0){
+							if(count($data) != 16)
+								$error_format[] = "<br>Error al leer los datos del archivo aportes.";
+						}else{
+							$contrib_data[] = $data;
+						}
+						$aux_cont++;
+					}
+				}
+			} else {
+				return $this->respond([
+					'message' 	=> "El archivo {$extract->contributions_file} no existe.",
+					'file' 		=> $file_con,
+					'status'	=> false
+				]);
+			}
 
-				if(count($errors) > 0)
-					return $this->respond([
-						'message' 	=> "No se pudo cargar el extracto ya que no existen todos los codigos en la linea de crédito.",
-						'data' 		=> $errors,
-						'status'	=> false
+			if(count($error_format) > 0){
+				return $this->respond([
+					'errors_format' 	=> $error_format,
+					'status'	=> false
+				]);
+			}else if(count($errors) > 0){
+				return $this->respond([
+					'message' 	=> "No se pudo cargar el extracto ya que no existen todos los codigos en la linea de crédito.",
+					'data' 		=> $errors,
+					'status'	=> false
+				]);
+			}
+
+			foreach ($wallets_data as $key => $data) {
+				$u_model = new User();
+				$user = $u_model->where(['identification' => $data[1]])->first();
+				if(empty($user)){
+					$u_model->save([
+						'name'              => 'NN',
+						'email'             => 'NN',
+						'username'          => $data[1],
+						'identification'    => $data[1],
+						'status'            => 'active',
+						'photo'             => '',
+						'role_id'           => 3
 					]);
-				
-				foreach ($wallets_data as $key => $data) {
+					$user_id = $u_model->insertID();
+					$p_model = new Password();
+					$p_model->save([
+						'user_id'   => $user_id,
+						'password'  => password_hash($data[1], PASSWORD_DEFAULT)
+					]);
+					$new_users++;
+				}else $user_id = $user->id;
+
+				$line_credit = 0;
+
+				foreach ($line_credits as $key => $credit) {
+					if($credit->code == $data[6])
+						$line_credit = $credit->id;
+				}
+
+				if($line_credit != 0){
+					$ew_model->save([
+						'user_id'					=> $user_id,
+						'registro'					=> $data[0],
+						'feccorte'					=> convierte_fecha_mysql($data[2]),
+						'fecsolici'					=> convierte_fecha_mysql($data[3]),
+						'fecfinal'					=> convierte_fecha_mysql($data[4]),
+						'numero'					=> $data[5],
+						'line_credit_extract_id'	=> $line_credit,
+						'tasanual'					=> $data[7],
+						'tasmes'					=> $data[8],
+						'valor'						=> $data[9],
+						'ctapact'					=> $data[10],
+						'ctapend'					=> $data[11],
+						'valcta'					=> $data[12],
+						'saldo'						=> $data[13],
+						'fecha_cargue'				=> $extract->date,
+					]);
+				}
+			}
+	
+			foreach ($contrib_data as $data) {
+				if($aux_cont <> 0){
 					$u_model = new User();
 					$user = $u_model->where(['identification' => $data[1]])->first();
 					if(empty($user)){
@@ -181,98 +272,29 @@ class DashboardController extends BaseController
 							'user_id'   => $user_id,
 							'password'  => password_hash($data[1], PASSWORD_DEFAULT)
 						]);
+						$new_users++;
 					}else $user_id = $user->id;
-
-					$line_credit = 0;
-
-					foreach ($line_credits as $key => $credit) {
-						if($credit->code == $data[6])
-							$line_credit = $credit->id;
-					}
-
-					if($line_credit != 0){
-						$ew_model->save([
-							'user_id'					=> $user_id,
-							'registro'					=> $data[0],
-							'feccorte'					=> $data[2],
-							'fecsolici'					=> $data[3],
-							'fecfinal'					=> $data[4],
-							'numero'					=> $data[5],
-							'line_credit_extract_id'	=> $line_credit,
-							'tasanual'					=> $data[7],
-							'tasmes'					=> $data[8],
-							'valor'						=> $data[9],
-							'ctapact'					=> $data[10],
-							'ctapend'					=> $data[11],
-							'valcta'					=> $data[12],
-							'saldo'						=> $data[13],
-							'fecha_cargue'				=> $extract->date,
-						]);
-					}
+					$ec_model->save([
+						'user_id' 		=> $user_id,
+						'numero' 		=> $data[0],
+						'fecha' 		=> convierte_fecha_mysql($data[2]),
+						'salahoper'		=> $data[3],
+						'salahopex'		=> $data[4],
+						'salresesp'		=> $data[5],
+						'salahovol'		=> $data[6],
+						'salahopro'		=> $data[7],
+						'salaportes'	=> $data[8],
+						'ctaahorro'		=> $data[9],
+						'ctaaportes'	=> $data[10],
+						'ctareserva'	=> $data[11],
+						'total'			=> $data[12],
+						'cartera'		=> $data[13],
+						'nivelendeu'	=> $data[14],
+						'salario'		=> $data[15],
+						'fecha_cargue'	=> $extract->date,
+					]);
 				}
-
-			} else {
-				return $this->respond([
-					'message' 	=> "El archivo {$extract->wallet_file} no existe.",
-					'file' 		=> $file_wal,
-					'status'	=> false
-				]);
-			}
-	
-			if (file_exists($file_con)) {
-				$contributions = fopen($file_con, "r");
-				if($contributions){
-					$aux_cont=0;
-					while (($data = fgetcsv($contributions, 1000, ";")) !== FALSE) {
-						if($aux_cont <> 0){
-							$u_model = new User();
-							$user = $u_model->where(['identification' => $data[1]])->first();
-							if(empty($user)){
-								$u_model->save([
-									'name'              => 'NN',
-									'email'             => 'NN',
-									'username'          => $data[1],
-									'identification'    => $data[1],
-									'status'            => 'active',
-									'photo'             => '',
-									'role_id'           => 3
-								]);
-								$user_id = $u_model->insertID();
-								$p_model = new Password();
-								$p_model->save([
-									'user_id'   => $user_id,
-									'password'  => password_hash($data[1], PASSWORD_DEFAULT)
-								]);
-							}else $user_id = $user->id;
-							$ec_model->save([
-								'user_id' 		=> $user_id,
-								'numero' 		=> $data[0],
-								'fecha' 		=> $data[2],
-								'salahoper'		=> $data[3],
-								'salahopex'		=> $data[4],
-								'salresesp'		=> $data[5],
-								'salahovol'		=> $data[6],
-								'salahopro'		=> $data[7],
-								'salaportes'	=> $data[8],
-								'ctaahorro'		=> $data[9],
-								'ctaaportes'	=> $data[10],
-								'ctareserva'	=> $data[11],
-								'total'			=> $data[12],
-								'cartera'		=> $data[13],
-								'nivelendeu'	=> $data[14],
-								'salario'		=> $data[15],
-								'fecha_cargue'	=> $extract->date,
-							]);
-						}
-						$aux_cont++;
-					}
-				}
-			} else {
-				return $this->respond([
-					'message' 	=> "El archivo {$extract->contributions_file} no existe.",
-					'file' 		=> $file_con,
-					'status'	=> false
-				]);
+				$aux_cont++;
 			}
 			
 			$e_model->save([
@@ -280,7 +302,14 @@ class DashboardController extends BaseController
 				'status'	=> 'Cargado'
 			]);
 
-			return $this->respond(['message' => "Extracto N° {$extract->consecutive} cargado con éxito.", 'status'	=> true]);
+			$message = "Extracto N° {$extract->consecutive} cargado con éxito.";
+			$nuevos_usuarios = $new_users == 1 ? "nuevo usuario." : "nuevos usuarios.";
+			$message .= $new_users > 0 ? "<br>Con {$new_users} {$nuevos_usuarios}" : "";
+
+			return $this->respond([
+				'message' 	=> $message,
+				'status'	=> true
+			]);
 		}else if(count($extracts) == 0){
 			return $this->respond(['message' => "No existe un extracto para cargar.", 'status'	=> false]);
 		}

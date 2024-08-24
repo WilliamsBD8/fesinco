@@ -1,8 +1,8 @@
 <?php
   use App\Models\General;
   use App\Models\SocialNetwork;
+  use App\Models\Category;
   use App\Models\Section;
-  use App\Models\SectionDetail;
   use App\Models\ContactTopic;
 
   function config_page(){
@@ -17,12 +17,18 @@
     return $info;
   }
 
-  function sections(){
+  function sections($id){
+    $c_model = new Category();
+    $category = $c_model->where(['id' => $id])->first();
+    $category->details = $c_model->getSection($id);
+    return $category;
+  }
+
+  function getSections($ids){
     $s_model = new Section();
-    $sections = $s_model->where(['status' => 'active'])->orderBy('position', 'ASC')->findAll();
-    $sd_model = new SectionDetail();
-    foreach($sections as $section){
-      $section->details = $sd_model->where(['section_id' => $section->id])->orderBy('position', 'ASC')->findAll();
+    $sections = $s_model->whereIn('category_id', $ids)->findAll();
+    foreach ($sections as $key => $section) {
+      $section->details = $s_model->getDetails($section->id);
     }
     return $sections;
   }

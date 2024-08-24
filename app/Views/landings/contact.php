@@ -1,91 +1,79 @@
 <?= $this->extend('layouts/landing'); ?>
 <?= $this->section('content'); ?>
 <!-- Main Content -->
-<div class="content margin-top60 margin-bottom60">
-    <div class="container">
-        <div class="row">
-            <!-- Contact Form -->
-            <div class="col-lg-8 col-md-8 col-sm-6 col-xs-12" id="contact-form">
-                <h2>Informacion de Contacto</h2>
-                <p>* Todos los campos son requeridos.</p>
-                <form method="post" class="reply" id="contact">
-                    <fieldset>
-                        <div class="row">
-                            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-                                <input class="form-control" id="name" name="name" type="text" placeholder="Nombre *" value="" required>
-                            </div>
-                            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-                                <input class="form-control" type="email" id="email" name="email" placeholder="Correo *" value="" required>
-                            </div>
+
+<!-- Contact Section -->
+<section id="contact" class="contact section">
+    <!-- Section Title -->
+    <div class="container section-title-2" data-aos="fade-up">
+        <h2></h2>
+        <p>Contactanos</p>
+        <span>* Todos los campos son requeridos.</span>
+    </div><!-- End Section Title -->
+
+    <div class="container" data-aos="fade-up" data-aos-delay="100">
+
+        <div class="row gy-4 align-items-center">
+
+            <div class="col-lg-4">
+                <div class="info-item d-flex align-items-center" data-aos="fade-up" data-aos-delay="300">
+                    <i class="icon bi bi-geo-alt flex-shrink-0 bg-primary-secondary"></i>
+                    <div>
+                        <h3>Dirección</h3>
+                        <p>Bogotá</p>
+                    </div>
+                </div>
+
+                <div class="info-item d-flex align-items-center" data-aos="fade-up" data-aos-delay="300">
+                    <i class="icon bi bi-telephone flex-shrink-0 bg-secondary-primary"></i>
+                    <div>
+                        <h3>Llamanos</h3>
+                        <p>+57 300 451 1625</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-8">
+                <form action="forms/contact.php" method="post" class="php-email-form" data-aos="fade-up" data-aos-delay="200">
+                    <div class="row gy-4">
+
+                        <div class="col-md-6">
+                            <input type="text" name="name" class="form-control" placeholder="Nombre*" required="">
                         </div>
-                        <div class="row">
-                            <div class="col-xs-12">
-                                <select class="form-control">
-                                    <option selected disabled>Tema *</option>
-                                    <?php foreach(contact_topics() as $contact): ?>
-                                        <option <?= $tema == $contact->id ? 'selected' :  ''?> value="<?= $contact->id ?>"><?= $contact->title ?></option>
-                                    <?php endforeach ?>
-                                </select>
-                            </div>
+
+                        <div class="col-md-6 ">
+                            <input type="email" class="form-control" name="email" placeholder="Correo*" required="">
                         </div>
-                        <div class="row">
-                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                <textarea class="form-control" id="text" name="text" rows="3" cols="40" placeholder="Message" required></textarea>
-                            </div>
+
+                        <div class="col-md-12">
+                            <select class="form-control" name="subject">
+                                <option selected disabled>Tema *</option>
+                                <?php foreach(contact_topics() as $contact): ?>
+                                    <option <?= $tema != null ? ($tema == $contact->id ? 'selected' :  'disabled') : ''?> value="<?= $contact->id ?>"><?= $contact->title ?></option>
+                                <?php endforeach ?>
+                            </select>
                         </div>
-                    </fieldset>
-                    <button class="btn btn-color submit pull-right" type="submit">Send</button>
-                    <div class="success alert-success alert" style="display:none">Your message has been sent successfully.</div>
-                    <div class="error alert-error alert" style="display:none">E-mail must be valid and message must be longer than 100 characters.</div>
-                    <div class="clearfix">
+
+                        <div class="col-md-12">
+                            <textarea class="form-control" name="message" rows="6" placeholder="Mensaje" required=""></textarea>
+                        </div>
+
+                        <div class="col-md-12 text-center">
+                            <div class="loading">Cargando</div>
+                            <div class="error-message"></div>
+                            <div class="sent-message">Su mensaje a sido enviado</div>
+
+                            <button class="bg-secondary-primary" type="submit">Enviar</button>
+                        </div>
+
                     </div>
                 </form>
-            </div>
-            <!-- /Contact Form -->
-            <div class="col-lg-4 col-md-4 col-xs-12 col-sm-6">
-                <div class="address widget">
-                    <h3 class="title">Head Office</h3>
-                    <ul class="contact-us">
-                        <li>
-                            <i class="fa fa-map-marker"></i>
-                            <p>
-                                <strong class="contact-pad">Address:</strong> 221 Baker Street<br> London <br>
-                                United Kingdom
-                            </p>
-                        </li>
-                        <li>
-                            <i class="fa fa-phone"></i>
-                            <p>
-                                <strong>Phone:</strong> +880 111-111-111
-                            </p>
-                        </li>
-                        <li>
-                            <i class="fa fa-envelope"></i>
-                            <p>
-                                <strong>Email:</strong><a href="mailto:email@demo.com">email@demo.com</a>
-                            </p>
-                        </li>
-                    </ul>
-                </div>
-                <div class="contact-info widget">
-                    <h3 class="title">Business Hour</h3>
-                    <ul class="business-hour">
-                        <li><i class="fa fa-clock-o"> </i>Monday - Friday 9am to 5pm </li>
-                        <li><i class="fa fa-clock-o"> </i>Saturday - 9am to 2pm</li>
-                        <li><i class="fa fa-times-circle-o"> </i>Sunday - Closed</li>
-                    </ul>
-                </div>
-                <div class="follow widget">
-                    <h3 class="title">Siguenos</h3>
-                    <div class="member-social dark">
-                        <?php foreach (social_networks() as $key => $network): ?>
-                            <a class="<?= strtolower($network->name) ?>" href="<?= $network->link ? $network->link : "#" ?>" target="<?= $network->_blank == 'Si' ? '_blank' : '' ?>"><i class="<?= $network->icon ?>"></i></a>
-                        <?php endforeach ?>
-                    </div>
-                </div>
-            </div>
+            </div><!-- End Contact Form -->
+
         </div>
+
     </div>
-</div>
+
+</section><!-- /Contact Section -->
 <!-- /Main Content -->
 <?= $this->endSection(); ?>
