@@ -15,7 +15,9 @@
                                     <h4 class="card-title"><?= $title ?></h4>
                                 </div>
                                 <div class="col s12 l6">
-                                    <a href="javascript:void(0);" onclick="extract_load()" class="btn btn-small right bg-primary ml-2"><i class="material-icons right">cloud_download</i> Cargar Extracto</a>
+                                    <?php if($title == 'Extractos'): ?>
+                                        <a href="javascript:void(0);" onclick="extract_load()" class="btn btn-small right bg-primary ml-2"><i class="material-icons right">cloud_download</i> Cargar Extracto</a>
+                                    <?php endif ?>
                                 </div>
                             </div>
                             <p><?= $subtitle ?></p>

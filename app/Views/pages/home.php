@@ -104,7 +104,7 @@
                                                     <i class="material-icons background-round mt-5">insert_drive_file</i>
                                                 </div>
                                                 <div class="col s8 right-align">
-                                                    <h5 class="mb-0 white-text"><?= $extract->date ?></h5>
+                                                    <h5 class="mb-0 white-text"><?= $extract->date ?? '' ?></h5>
                                                     <p class="no-margin">Ultimo Cargado</p>
                                                 </div>
                                             </div>

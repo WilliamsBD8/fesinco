@@ -39,4 +39,14 @@ class Section extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+
+    public function getDetails($id, $order = "ASC"){
+        $details = $this->builder('section_details')->where(['section_id' => $id, 'status' => 'active'])->orderBy('position', $order)->get()->getResult();
+        return $details;
+    }
+
+    public function getDetailsBasic($id, $order = "ASC"){
+        $details = $this->builder('section_details')->where(['section_id' => $id, 'status' => 'active'])->orderBy('position', $order);
+        return $details;
+    }
 }

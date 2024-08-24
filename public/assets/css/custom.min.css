@@ -7,6 +7,11 @@
   background: linear-gradient(45deg, var(--primary-color), var(--secondary-color)) !important
 }
 
+.bg-secondary-primary{
+  background: -webkit-linear-gradient(45deg, var(--secondary-color), var(--primary-color)) !important;
+  background: linear-gradient(45deg, var(--secondary-color), var(--primary-color)) !important
+}
+
 .bg-primary, .bg-primary:hover{
   background: var(--primary-color) !important;
 }
@@ -29,6 +34,17 @@ a{
   color: var(--primary-color);
 }
 
+.text-primary {
+  color: var(--primary-color) !important;
+}
+
+.text-secondary {
+  color: var(--secondary-color) !important;
+}
+
+.text-white{
+  color: white !important;
+}
 
 .user-view .background img{
   height: 100%;

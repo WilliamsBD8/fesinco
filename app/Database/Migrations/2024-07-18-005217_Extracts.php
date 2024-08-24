@@ -13,7 +13,7 @@ class Extracts extends Migration
 			'date'      			=> ['type' => 'DATE', 'null' => TRUE],
 			'contributions_file'	=> ['type' => 'VARCHAR', 'constraint' => 100],
 			'wallet_file'  			=> ['type' => 'VARCHAR', 'constraint' => 40],
-			'status'    			=> ['type' => 'ENUM("Para cargar", "Cargado")', 'default' => 'Para cargar'],
+			'status'    			=> ['type' => 'ENUM("Para cargar", "Cargado", "Anulado")', 'default' => 'Para cargar'],
 			'observation'  			=> ['type' => 'VARCHAR', 'constraint' => 100],
 			'consecutive'      		=> ['type' => 'INT', 'constraint' => 11],
 		]);

@@ -6,9 +6,13 @@ class DataSeeder extends \CodeIgniter\Database\Seeder
     {
         $this->call('RoleSeeder');
         $this->call('UserSeeder');
-        $this->call('ExtractsContributionsSeeder');
-        $this->call('ExtractsWalletSeeder');
+        $this->call('LineCreditExtractSeed');
+        // $this->call('ExtractsContributionsSeeder');
+        // $this->call('ExtractsWalletSeeder');
         $this->call('SocialNetworsSeed');
         $this->call('MenuSeeder');
+        $this->call('ConfigSeeder');
+        $this->call('CreditStatusSeed');
+        $this->call('CategorySeeder');
     }
 }

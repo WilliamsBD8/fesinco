@@ -11,6 +11,8 @@ class HomeGalery extends Migration
         $this->forge->addField([
 		    'id'            => ['type' => 'INT', 'constraint' => 11, 'unsigned' => TRUE, 'auto_increment' => TRUE ],
             'img'           => ['type' => 'VARCHAR', 'constraint' => 100, 'null' => true],
+            'title'         => ['type' => 'VARCHAR', 'constraint' => 200, 'null' => true],
+            'description'   => ['type' => 'TEXT', 'null' => true],
             'position'      => ['type' => 'INT', 'constraint' => 11, 'null' => true],
 			'status'        => ['type' => 'ENUM("active", "inactive")', 'default' => 'active']
         ]);

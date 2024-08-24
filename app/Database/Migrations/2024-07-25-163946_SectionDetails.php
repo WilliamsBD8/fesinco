@@ -12,7 +12,6 @@ class SectionDetails extends Migration
 			'id'                => ['type' => 'INT', 'constraint' => 11, 'unsigned' => TRUE, 'auto_increment'  => TRUE],
 			'section_id'   	    => ['type' => 'INT', 'constraint' => 11, 'unsigned' => TRUE],
             'title'             => ['type' => 'VARCHAR', 'constraint' => 255, 'null' => TRUE],
-			'description_short' => ['type' => 'TEXT', 'null' => TRUE],
 			'description'       => ['type' => 'TEXT', 'null' => TRUE],
 			'specification'     => ['type' => 'TEXT', 'null' => TRUE],
 			'img'               => ['type' => 'VARCHAR', 'constraint' => 255, 'null' => TRUE],

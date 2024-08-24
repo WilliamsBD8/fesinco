@@ -10,6 +10,7 @@ class Sections extends Migration
     {
         $this->forge->addField([
 			'id'                => ['type' => 'INT', 'constraint' => 11, 'unsigned' => TRUE, 'auto_increment'  => TRUE],
+			'category_id'       => ['type' => 'INT', 'constraint' => 11, 'unsigned' => TRUE],
             'title'             => ['type' => 'VARCHAR', 'constraint' => 255, 'null' => TRUE],
 			'description'       => ['type' => 'TEXT', 'null' => TRUE],
 			'img'               => ['type' => 'VARCHAR', 'constraint' => 255, 'null' => TRUE],
@@ -18,6 +19,7 @@ class Sections extends Migration
 			'status'            => ['type' => 'ENUM("active", "inactive")', 'default' => 'active'],
 		]);
 		$this->forge->addKey('id', TRUE);
+		$this->forge->addForeignKey('category_id', 'categories', 'id');
 		$this->forge->createTable('sections');
     }
 
