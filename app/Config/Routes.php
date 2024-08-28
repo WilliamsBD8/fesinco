@@ -39,6 +39,11 @@ $routes->get('contact', 'PageController::contact');
 $routes->get('contact/(:segment)', 'PageController::contact/$1');
 $routes->get('section/(:segment)', 'PageController::section/$1');
 $routes->get('section/detail/(:segment)', 'PageController::section_detail/$1');
+
+$routes->get('sections/(:segment)', 'PageController::sections/$1');
+
+$routes->post('send/contact', 'PageController::sendContact');
+
 // Fin Links para la pagina
 
 $routes->get('password', 'PasswordController::index');

@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Models\User;
 use App\Models\About;
+use App\Models\AboutDetail;
 use App\Models\Role;
 use App\Models\HomeGalery;
 
@@ -13,9 +14,13 @@ use App\Models\Section;
 use App\Models\SectionDetail;
 use App\Models\Agreement;
 use App\Models\AgreementDetail;
+use App\Models\InfoTeam;
+
+use CodeIgniter\API\ResponseTrait;
 
 class PageController extends BaseController
 {
+    use ResponseTrait;
 
 	public function home()
 	{
@@ -28,6 +33,9 @@ class PageController extends BaseController
 
 		$a_model = new About();
 		$about = $a_model->find(1);
+		$ad_model = new AboutDetail();
+
+		$about->details = $ad_model->where(['status' => 'active'])->orderBy('position', 'ASC')->findAll();
 
 		$s_model = new Section();
 		$agreement = $s_model->where(['category_id' => 2, 'status' => 'active'])->orderBy('position', 'ASC')->first();
@@ -36,6 +44,10 @@ class PageController extends BaseController
 		$publication = $c_model->where(['id' => 4])->first();
 		$publication->details = $c_model->getSection($publication->id);
 
+		$it_model = new InfoTeam();
+		$teams = $it_model->first();
+		$teams->teams = $it_model->getTeams();
+
 		// var_dump($publication); die;
 
     	return  view('landings/home', [
@@ -43,7 +55,8 @@ class PageController extends BaseController
 			'category_1'	=> $category_1,
 			'about'			=> $about,
 			'agreement'		=> $agreement,
-			'publication'	=> $publication
+			'publication'	=> $publication,
+			'teams'			=> $teams
 		]);
 	}
 
@@ -57,7 +70,7 @@ class PageController extends BaseController
 		foreach ($roles as $key => $rol) {
 			$rol->users = $r_model->getUsers($rol->id);
 		}
-    return  view('landings/about_us', [
+    	return  view('landings/about_us', [
 			'about' => $about,
 			'roles'	=> $roles,
 			'teams'	=> $users
@@ -65,7 +78,7 @@ class PageController extends BaseController
 	}
 
 	public function contact($tema = null){
-    return  view('landings/contact', [
+    	return  view('landings/contact', [
 			'tema' => $tema
 		]);
 	}
@@ -74,7 +87,7 @@ class PageController extends BaseController
 		$s_model = new Section();
 		$sd_model = new SectionDetail();
 		$section = $s_model->where(['id' => $id])->first();
-		$section->details = $sd_model->where(['section_id' => $section->id, 'status' => 'active'])->orderBy('position', 'ASC')->paginate(2, '');
+		$section->details = $sd_model->where(['section_id' => $section->id, 'status' => 'active'])->orderBy('position', 'ASC')->paginate(9, '');
 		$section->pager = $sd_model->pager;
 		$sections = $s_model
 			->select([
@@ -136,6 +149,22 @@ class PageController extends BaseController
 			'sections'	=> $sections,
 			'recents'	=> $sec_recient
 		]);
+	}
+
+	public function sections($id){
+		$s_model = new Section();
+		$section = $s_model->where(['id' => $id])->first();
+		$section->details = $s_model->getDetails($id);
+		return view('landings/sections', [
+			'section' => $section
+		]);
+	}
+
+	public function sendContact(){
+		$data = $this->request->getJson();
+		
+
+		return $this->respond(['data' => $data]);
 	}
 
 }

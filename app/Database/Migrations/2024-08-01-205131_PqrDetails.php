@@ -16,10 +16,10 @@ class PqrDetails extends Migration
             'created_at'        => ['type' => 'DATETIME', 'null' => TRUE],
             'updated_at'        => ['type' => 'DATETIME', 'null' => TRUE]
         ]);
-		$this->forge->addKey('id', TRUE);
-		$this->forge->addForeignKey('user_id', 'users', 'id');
-		$this->forge->addForeignKey('pqr_id', 'pqrs', 'id');
-		$this->forge->createTable('pqr_details');
+        $this->forge->addKey('id', TRUE);
+        $this->forge->addForeignKey('user_id', 'users', 'id');
+        $this->forge->addForeignKey('pqr_id', 'pqrs', 'id');
+        $this->forge->createTable('pqr_details');
     }
 
     public function down()
