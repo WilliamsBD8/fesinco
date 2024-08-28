@@ -29,7 +29,7 @@
 <div class="container">
     <div class="row">
 
-        <div class="col-lg-8">
+        <div class="col-lg-<?= count($recents) == 0 ? 12 : 8 ?>">
 
             <!-- Blog Details Section -->
             <section id="blog-details" class="blog-details section">
@@ -43,15 +43,6 @@
                         <?php endif ?>
 
                         <h2 class="title"><?= $section->title ?></h2>
-
-                        <!-- <div class="meta-top">
-                        <ul>
-                            <li class="d-flex align-items-center"><i class="bi bi-person"></i> <a href="blog-details.html">John Doe</a></li>
-                            <li class="d-flex align-items-center"><i class="bi bi-clock"></i> <a href="blog-details.html"><time datetime="2020-01-01">Jan 1, 2022</time></a></li>
-                            <li class="d-flex align-items-center"><i class="bi bi-chat-dots"></i> <a href="blog-details.html">12 Comments</a></li>
-                        </ul>
-                        </div> -->
-                        <!-- End meta top -->
                         
                         <div class="content">
                             <div class="features" data-aos="fade-up" data-aos-delay="100">
@@ -97,6 +88,13 @@
                                 </div>
                             
                             </div>
+                            
+                            <?php if(!empty($section->file)): ?>
+                                <div class="read-more">
+                                    <a href="<?= base_url(['upload/sections', $section->file]) ?>">Descargar</a>
+                                </div>
+                            <?php endif ?>
+                            
 
                         </div><!-- End post content -->
 
@@ -107,28 +105,16 @@
 
         </div>
 
-        <div class="col-lg-4 sidebar">
+        <?php if(count($recents)): ?>
+            <div class="col-lg-4 sidebar">
 
-            <div class="widgets-container">
-
-                <!-- Categories Widget -->
-                <div class="categories-widget widget-item">
-
-                    <h3 class="widget-title">Categories</h3>
-                    <ul class="mt-3">
-                        <?php foreach ($sections as $key => $sec_detail): ?>
-                            <li><a href="<?= base_url(['section', $sec_detail->id]) ?>"><?= $sec_detail->title ?> <span>(<?= $sec_detail->total ?>)</span></a></li>
-                        <?php endforeach ?>
-                    </ul>
-
-                </div><!--/Categories Widget -->
+                <div class="widgets-container">
 
                 <!-- Recent Posts Widget -->
-                <?php if(count($recents)): ?>
                     <!-- Recent Posts Widget -->
                     <div class="recent-posts-widget widget-item">
 
-                        <h3 class="widget-title">Recent Posts</h3>
+                        <h3 class="widget-title"><?= $section->section ?></h3>
                         <?php foreach ($recents as $key => $recent): ?>
                             <div class="post-item">
                                 <img src="<?= base_url(["page/img/sections", $recent->img]) ?>" alt="" class="flex-shrink-0">
@@ -139,11 +125,11 @@
                         <?php endforeach ?>
 
                     </div><!--/Recent Posts Widget -->
-                <?php endif ?><!--/Recent Posts Widget -->
-
+                    
+                </div>
+                
             </div>
-
-        </div>
+        <?php endif ?><!--/Recent Posts Widget -->
 
     </div>
 </div>

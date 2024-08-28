@@ -12,15 +12,15 @@
   /**
    * Apply .scrolled class to the body as the page is scrolled down
    */
-  function toggleScrolled() {
-    const selectBody = document.querySelector('body');
-    const selectHeader = document.querySelector('#header');
-    if (!selectHeader.classList.contains('scroll-up-sticky') && !selectHeader.classList.contains('sticky-top') && !selectHeader.classList.contains('fixed-top')) return;
-    window.scrollY > 100 ? selectBody.classList.add('scrolled') : selectBody.classList.remove('scrolled');
-  }
+  // function toggleScrolled() {
+  //   const selectBody = document.querySelector('body');
+  //   const selectHeader = document.querySelector('#header');
+  //   if (!selectHeader.classList.contains('scroll-up-sticky') && !selectHeader.classList.contains('sticky-top') && !selectHeader.classList.contains('fixed-top')) return;
+  //   window.scrollY > 100 ? selectBody.classList.add('scrolled') : selectBody.classList.remove('scrolled');
+  // }
 
-  document.addEventListener('scroll', toggleScrolled);
-  window.addEventListener('load', toggleScrolled);
+  // document.addEventListener('scroll', toggleScrolled);
+  // window.addEventListener('load', toggleScrolled);
 
   /**
    * Mobile nav toggle
@@ -65,6 +65,19 @@
   if (preloader) {
     window.addEventListener('load', () => {
       preloader.remove();
+      // const menu = document.getElementById('menu');
+      // const main = document.getElementById('main');
+      // const window_height = window.pageYOffset || document.documentElement.scrollTop;
+      // const menuHeight = menu.offsetHeight;
+      // main.style.paddingTop = `${menuHeight}px`;
+      // if(window_height >= menuHeight){
+      //   menu.classList.remove('fixed');
+      //   menu.classList.add('fixed-not');
+      // }else{
+      //   menu.classList.add('fixed');
+      //   menu.classList.remove('fixed-not');
+      // }
+
     });
   }
 

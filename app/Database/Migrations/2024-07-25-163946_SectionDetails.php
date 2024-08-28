@@ -15,6 +15,7 @@ class SectionDetails extends Migration
 			'description'       => ['type' => 'TEXT', 'null' => TRUE],
 			'specification'     => ['type' => 'TEXT', 'null' => TRUE],
 			'img'               => ['type' => 'VARCHAR', 'constraint' => 255, 'null' => TRUE],
+			'file'              => ['type' => 'VARCHAR', 'constraint' => 255, 'null' => TRUE],
             'position'          => ['type' => 'INT', 'constraint' => 11, 'null' => TRUE],
 			'status'            => ['type' => 'ENUM("active", "inactive")', 'default' => 'active'],
 		]);

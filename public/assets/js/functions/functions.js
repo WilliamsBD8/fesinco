@@ -8,7 +8,7 @@ function proceso_fetch(url, data, method = 'POST') {
       return response.json();
   }).catch(error => {
     console.error(error);
-      alert('<span class="red-text">Error en la consulta</span>', 'red lighten-5');
+    alert('<span class="red-text">Error en la consulta</span>', 'red lighten-5');
   });
 }
 

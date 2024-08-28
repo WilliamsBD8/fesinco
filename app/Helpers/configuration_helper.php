@@ -94,3 +94,30 @@ function addLi($text, $search = '/<li>/', $textPre = '<li> <i class="bi bi-check
     $contenidoModificado = preg_replace($search, $textPre, $text);
     return $contenidoModificado;
 }
+
+function addLiNew($html) {
+    $html = html_entity_decode($html);
+    // Utiliza una expresión regular para capturar la etiqueta <i> y el contenido del <div>
+    $pattern = '/<li>\s*<p>(<i(.*?)<\/i>)(.*?)<\/p>\s*<\/li>/s';
+    
+    // Reemplaza el patrón encontrado con la etiqueta <i> movida fuera del <div>
+    $result = preg_replace_callback($pattern, function($matches) {
+        $icon = $matches[1];
+        $content = $matches[3];
+        
+        // Reordena las etiquetas para mover el <i> fuera del <p>
+        return '<li>' . $icon . '<p>' . $content . '</p></li>';
+    }, $html);
+    
+    return $result;
+}
+
+function indiPhone($text, $valid = true) {
+    // Verifica si el texto contiene '+57'
+    if (strpos($text, '+57') !== false) {
+        return $text;
+    } else {
+        $text = "+57 {$text}";
+        return $valid ? $text : str_replace(' ', '', $text);
+    }
+}

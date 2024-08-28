@@ -8,6 +8,7 @@ use App\Traits\Grocery;
 use App\Models\Menu;
 use App\Models\General;
 use App\Models\About;
+use App\Models\AboutDetail;
 use App\Models\Agreement;
 use App\Models\Password;
 use App\Models\Extract;
@@ -16,6 +17,7 @@ use App\Models\SectionDetail;
 use App\Models\CreditRate;
 use App\Models\User;
 use App\Models\Pqr;
+use App\Models\InfoTeam;
 
 use App\Models\ExtractsContributions;
 use App\Models\ExtractsWallet;
@@ -44,16 +46,6 @@ class TableController extends BaseController
         if($component) {
             $this->crud->setTable($component[0]->table);
             switch ($component[0]->url) {
-
-                case 'general':
-                    $g_model = new General();
-                    $general = $g_model->first();
-                    if(!empty($general)){
-                        $this->crud->unsetAdd();
-                        $this->crud->unsetDelete();
-                    }
-                    $this->crud->setFieldUpload('logo', 'page/img/general', base_url(['page/img/general']));
-                    break;
                 case 'afiliados':
                     $this->crud->displayAs([
                         'name'              => 'Nombre',
@@ -362,11 +354,45 @@ class TableController extends BaseController
 
 
                 // Info Pagina
+                case 'general':
+                    $this->crud->displayAs([
+                        'name'              => 'Titulo',
+                        'description'       => 'Descripción',
+                        'keywords'          => 'Palabras Claves',
+                        'addres'            => 'Dirección',
+                        'phone'             => 'N° Telefono',
+                        'message_whatsapp'  => 'Mensaje de whatsapp',
+                        'button_pse'        => 'Boton PSE',
+                        'link_pse'          => 'Link PSE',
+                    ]);
+                    
+                    $g_model = new General();
+                    $general = $g_model->first();
+                    if(!empty($general)){
+                        $this->crud->unsetAdd();
+                        $this->crud->unsetDelete();
+                    }
+                    $this->crud->setFieldUpload('logo', 'page/img/logos', base_url(['page/img/logos']));
+                    $this->crud->setTexteditor(['addres']);
+                    break;
 
+                case 'config_creditos':
+                    $this->crud->where(['id' => 1]);
+                    $this->crud->displayAs([
+                        'name'  => 'Titulo',
+                        'title' => 'Sub Titulo',
+                    ]);
+                    $this->crud->unsetAdd();
+                    $this->crud->unsetDelete();
+                    $this->crud->setActionButton('Avatar', 'fa fa-bars', function ($row) {
+                        return base_url(['table', 'info_creditos']);
+                    }, false);
+                    break;
                 case 'info_creditos':
                     $this->crud->where(['category_id' => 1]);
                     $this->crud->displayas([
                         'title'             => 'Titulo',
+                        'sub_title'         => 'Sub Titulo',
                         'description'       => 'Descrpción',
                         'img'               => 'Imagen',
                         'position'          => 'Posición',
@@ -380,7 +406,7 @@ class TableController extends BaseController
                         return base_url(['table', 'info_creditos', $row->id]);
                     }, false);
 
-                    $this->crud->columns(['title', 'description', 'img', 'position', 'status', 'credit_simulation']);
+                    $this->crud->columns(['title','sub_title', 'description', 'img', 'position', 'status', 'credit_simulation']);
                     $this->crud->unsetEditFields(['category_id']);
                     $this->crud->unsetAddFields(['category_id']);
 
@@ -393,9 +419,10 @@ class TableController extends BaseController
 
                 case 'convenios':
                     $this->crud->where(['category_id' => 2]);
-                    $this->crud->columns(['title', 'description', 'img', 'status']);
+                    $this->crud->columns(['title', 'sub_title', 'description', 'img', 'status']);
                     $this->crud->displayas([
                         'title'             => 'Titulo',
+                        'sub_title'         => 'Sub Titulo',
                         'description'       => 'Descrpción',
                         'img'               => 'Imagen',
                         'position'          => 'Posición',
@@ -422,7 +449,19 @@ class TableController extends BaseController
                         return base_url(['table', 'convenios', $row->id]);
                     }, false);
                     break;
-                case 'publicaciones':
+                case 'publications':
+                    $this->crud->where(['id' => 4]);
+                    $this->crud->displayAs([
+                        'name'  => 'Titulo',
+                        'title' => 'Sub Titulo',
+                    ]);
+                    $this->crud->unsetAdd();
+                    $this->crud->unsetDelete();
+                    $this->crud->setActionButton('Avatar', 'fa fa-bars', function ($row) {
+                        return base_url(['table', 'publication']);
+                    }, false);
+                    break;
+                case 'publication':
                     $this->crud->where(['category_id' => 4]);
                     $this->crud->columns(['title', 'description', 'img', 'position', 'status']);
                     $this->crud->displayas([
@@ -447,6 +486,89 @@ class TableController extends BaseController
                     $this->crud->setActionButton('Avatar', 'fa fa-bars', function ($row) {
                         return base_url(['table', 'publicaciones', $row->id]);
                     }, false);
+                    break;
+
+                case 'noticy':
+                    $s_model = new Section();
+                    $section = $s_model->where(['category_id' => 3])->countAllResults();
+                    if($section)
+                        $this->crud->unsetAdd();
+                    $this->crud->where(['category_id' => 3]);
+                    $this->crud->columns(['title', 'description', 'img', 'position', 'status']);
+                    $this->crud->displayas([
+                        'title'             => 'Titulo',
+                        'sub_title'         => 'Sub Titulo',
+                        'description'       => 'Descrpción',
+                        'img'               => 'Imagen',
+                        'position'          => 'Posición',
+                        'status'            => 'Estado'
+                    ]);
+                    $this->crud->callbackBeforeInsert(function ($stateParameters) {
+                        $stateParameters->data['category_id'] = 3;
+                        return $stateParameters;
+                    });
+                    
+                    $this->crud->setFieldUpload('img', 'page/img/sections', base_url(['page/img/sections']));
+
+                    $this->crud->unsetEditFields(['category_id', 'credit_simulation', 'status', 'img', 'position']);
+                    $this->crud->unsetAddFields(['category_id', 'credit_simulation', 'status', 'img', 'position']);
+
+                    $this->crud->unsetDelete();
+                    $this->crud->setTexteditor(['description']);
+                    $this->crud->setActionButton('Avatar', 'fa fa-bars', function ($row) {
+                        return base_url(['table', 'noticy', $row->id]);
+                    }, false);
+
+                    break;
+                
+                case 'info_teams':
+                    $this->crud->displayAs([
+                        'title'         => 'Titulo',
+                        'sub_title'     => 'Sub Titulo',
+                        'description'   => 'Descripción',
+                        'img'           => 'Imagen de fondo'
+                    ]);
+                    $this->crud->setFieldUpload('img', 'page/img/team', base_url(['page/img/team']));
+                    $it_model = new InfoTeam();
+                    $info_team = $it_model->countAllResults();
+                    if($info_team){
+                        $this->crud->unsetAdd();
+                        $this->crud->unsetDelete();
+                    }
+                    $this->crud->setActionButton('Avatar', 'fa fa-bars', function ($row) {
+                        return base_url(['table', 'info_teams', 'team']);
+                    }, false);
+                    break;
+
+                case 'afiliarme':
+                    $s_model = new Section();
+                    $section = $s_model->where(['category_id' => 5])->countAllResults();
+                    if($section)
+                        $this->crud->unsetAdd();
+                    $this->crud->unsetDelete();
+                    $this->crud->where(['category_id' => 5]);
+                    $this->crud->displayas([
+                        'title'             => 'Titulo',
+                        'sub_title'         => 'Sub Titulo',
+                        'description'       => 'Descrpción',
+                        'img'               => 'Imagen',
+                        'position'          => 'Posición',
+                    ]);
+                    // $this->crud->setFieldUpload('img', 'page/img/sections', base_url(['page/img/sections']));
+                    $this->crud->setTexteditor(['description']);
+                    $this->crud->unsetDelete();
+                    $this->crud->setActionButton('Avatar', 'fa fa-bars', function ($row) {
+                        return base_url(['table', 'afiliarme', $row->id]);
+                    }, false);
+
+                    $this->crud->columns(['title','sub_title', 'description']);
+                    $this->crud->unsetEditFields(['category_id', 'credit_simulation', 'position', 'status']);
+                    $this->crud->unsetAddFields(['category_id', 'credit_simulation', 'position', 'status']);
+
+                    $this->crud->callbackBeforeInsert(function ($stateParameters) {
+                        $stateParameters->data['category_id'] = 5;
+                        return $stateParameters;
+                    });
                     break;
 
 
@@ -480,6 +602,7 @@ class TableController extends BaseController
                 case 'about':
                     $this->crud->displayAs([
                         'title'         => 'Titulo',
+                        'sub_title'     => 'Sub Titulo',
                         'description'   => 'Descripicción',
                         'img'           => 'Imagen'
                     ]);
@@ -491,6 +614,9 @@ class TableController extends BaseController
                         $this->crud->unsetDelete();
                     }
                     $this->crud->setTexteditor(['description', 'mision', 'vision']);
+                    $this->crud->setActionButton('Avatar', 'fa fa-bars', function ($row) {
+                        return base_url(['table', 'about', 'details']);
+                    }, false);
                     break;
                 case 'home_galery':
                     $this->crud->displayas([
@@ -580,6 +706,9 @@ class TableController extends BaseController
             switch ($data) {
                 case 'info_creditos':
                 case 'convenios':
+                case 'publicaciones':
+                case 'noticy':
+                case 'afiliarme':
                     $this->crud->setTable('section_details');
                     $s_model = new Section();
                     $section = $s_model->where(['id' => $this->id])->first();
@@ -595,9 +724,19 @@ class TableController extends BaseController
                         'status'            => 'Estado'
                     ]);
                     $this->crud->setTexteditor(['description_short', 'description', 'specification']);
-                    if($data == 'convenios')
-                        $this->crud->setFieldUpload('img', 'page/img/agreements', base_url(['page/img/agreements']));
                     $this->crud->setFieldUpload('img', 'page/img/sections', base_url(['page/img/sections']));
+                    $this->crud->setFieldUpload('file', 'upload/sections', base_url(['upload/sections']));
+                    $this->crud->callbackColumn('file', function ($value, $row) {
+                        return "<a href='".base_url(['upload/sections', $value])."'>$value</a>";
+                    });
+                    if($data == 'afiliarme'){
+                        $sd_model = new SectionDetail();
+                        $section_detail = $sd_model->where(['section_id' => $section->id])->countAllResults();
+                        if($section_detail){
+                            $this->crud->unsetAdd();
+                            $this->crud->unsetDelete();
+                        }
+                    }
                     break;
                 case 'afiliados':
                     $this->crud->setTable('passwords');
@@ -664,8 +803,38 @@ class TableController extends BaseController
                         $this->crud->unsetOperations();
 
                     break;
+                
+                case 'about':
+                    // $ad_model = new AboutDetail();
+                    // $about = $ad_model->where(['status' => 'active'])->countAllResults();
+                    // if($about == 3){
+                    //     $this->crud->unsetAdd();
+                    // }
+                    $this->crud->setTable('about_details');
+                    $this->crud->displayAs([
+                        'title'         => 'Titulo',
+                        'sub_title'     => 'Sub Titulo',
+                        'description'   => 'Descripción',
+                        'position'      => 'Posición',
+                        'status'        => 'Estado'
+                    ]);
+                    $this->crud->setTexteditor(['description']);
+                    break;
+                case 'info_teams':
+                    $title = "Información del equipo";
+                    $this->crud->setTable('teams');
+                    $this->crud->setFieldUpload('img', 'page/img/team', base_url(['page/img/team']));
+                    $this->crud->displayAs([
+                        'name'      => 'Nombre',
+                        'rol'       => 'Cargo',
+                        'phone'     => 'Telefono',
+                        'email'     => 'Correo',
+                        'position'  => 'Posición',
+                        'status'    => 'Estado'
+                    ]);
+                    break;
                 default:
-                break;   
+                    break;   
             }
             $output = $this->crud->render();
             if (isset($output->isJSONResponse) && $output->isJSONResponse) {
