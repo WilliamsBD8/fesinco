@@ -1,5 +1,48 @@
+<?php if(isset($user)): ?>
+    <h2 class="title">Datos del Afiliado</h2>
+    <table class="centered striped">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Cédula</th>
+                <th>Teléfono</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><?= $user->name ?></td>
+                <td><?= $user->identification ?></td>
+                <td><?= $user->phone ?></td>
+            </tr>
+        </tbody>
+    </table>
+<?php endif ?>
 
-<table>
+<h2 class="<?= isset($user) ? 'sub-' : '' ?>title">Datos del Crédito</h2>
+<table class="centered dates-credits striped">
+    <thead>
+        <tr>
+            <th>Monto Solicitado</th>
+            <th>Plazo</th>
+            <th>Interes Mensual</th>
+            <th>Seguro</th>
+            <th>Cuota</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>$ <?= number_format($mont_value, 2, '.', ',') ?></td>
+            <td><?= $quota_max ?></td>
+            <td><?= $rate ?>%</td>
+            <td><?= $segu_tasa * 100 ?>%</td>
+            <td>$ <?= number_format($cuota, 2, '.', ',') ?></td>
+        </tr>
+    </tbody>
+</table>
+
+<h3 class="sub-title">Información del crédito</h3>
+
+<table class="centered info-credit striped">
     <thead>
         <tr>
             <th>N°</th>

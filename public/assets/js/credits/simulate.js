@@ -86,21 +86,23 @@ async function as_submit(event){
     event.preventDefault();
     var credit_id = $('#type_credit_id').val();
     if(credit_id == '')
-        return alert('Debe de seleccionar un tipo de crédito');
+        return showError('Debe de seleccionar un tipo de crédito');
     let mont_value = $('#value').val();
     if(mont_value == '')
-        return alert('Debe de ingresar un monto');
+        return showError('Debe de ingresar un monto');
     mont_value = parseFloat(mont_value.replace(/,/g, ''));
     let type_credit = type_credits.find(t => t.id == credit_id);
     let quota_max = $('#quota_max').val();
     if(parseInt(quota_max) > parseInt(type_credit.quota_max))
-        return alert('El valor de los peridos mensuales superan al permitido');
+        return showError('El valor de los peridos mensuales superan al permitido');
     let form = {
         type_credit_id  : credit_id,
         value           : mont_value,
         quota_max       : quota_max
     }
     let url = base_url(['dashboard/simulate_credit']);
+    $('.loading-form').show();
+    $('.error-message').hide();
     await proceso_fetch(url, JSON.stringify(form)).then( data => {
         var byteCharacters = atob(data.pdf);
         var byteNumbers = new Array(byteCharacters.length);
@@ -113,12 +115,19 @@ async function as_submit(event){
         $('.section.table').html(`
             <div class="card">
                 <div class="card-content">
-                    <a href="${blobUrl}" class="btn bg-primary" download="mi_documento.pdf">
+                    <a href="${blobUrl}" class="btn bg-primary" download="simulacion.pdf">
                         Imprimir
                     </a>
                     ${data.page}
                 </div>
             </div>
         `);
+        $('.loading-form').hide();
     });
+}
+
+function showError(error){
+    $('.loading-form').hide();
+    $('.error-message .card-content').html(error);
+    $('.error-message').show();
 }

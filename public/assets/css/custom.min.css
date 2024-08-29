@@ -49,3 +49,42 @@ a{
 .user-view .background img{
   height: 100%;
 }
+
+.rotating {
+  display: inline-block;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  from {
+      transform: rotate(0deg); /* Empieza desde 0 grados */
+  }
+  to {
+      transform: rotate(360deg); /* Gira 360 grados (una vuelta completa) */
+  }
+}
+
+.loading-form .info{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--primary-color);
+}
+
+.loading-form, .error-message {
+  display: none;
+}
+
+.title{
+  font-size: 20px;
+  text-align: center;
+  color: var(--primary-color);
+  font-weight: 800;
+}
+
+.sub-title{
+  font-size: 18px;
+  text-align: center;
+  color: var(--primary-color);
+  font-weight: 800;
+}

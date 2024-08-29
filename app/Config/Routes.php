@@ -63,7 +63,7 @@ $routes->group('dashboard', function ($routes){
 	$routes->post('extracts/view', 'DashboardController::extracts_view');
 
 	// PDF
-	$routes->post('generate_pdf', 'DashboardController::generate_pdf');
+	$routes->get('credits/pdf/(:segment)', 'DashboardController::generate_pdf_credit/$1');
 });
 
 $routes->get('/login', 'AuthController::login');

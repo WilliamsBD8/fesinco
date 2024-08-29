@@ -145,18 +145,6 @@
                                                                 <td><?= transformDate($user->created_at) ?></td>
                                                             </tr>
                                                         <?php endforeach ?>
-                                                        <tr>
-                                                            <td>William Bonilla</td>
-                                                            <td><?= transformDate('2024-08-05 17:00:01') ?></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>Steven Diaz</td>
-                                                            <td><?= transformDate('2024-08-05 17:21:01') ?></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>Juan Rodriguez</td>
-                                                            <td><?= transformDate('2024-08-05 17:45:01') ?></td>
-                                                        </tr>
                                                     </tbody>
                                                 </table>
                                             </div>
