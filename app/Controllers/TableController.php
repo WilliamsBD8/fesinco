@@ -254,8 +254,8 @@ class TableController extends BaseController
                     ]);
 
                     $this->crud->callbackColumn('updated_at', function ($value, $row) {
-                        $buttons = '';
-                        if(session('user')->role_id == 3 && $row->credit_status_id == 1){
+                        $buttons = '<a href="'.base_url(['dashboard/credits/pdf', $row->id]).'" class="pink-text tooltipped" data-position="bottom" data-tooltip="Descargar Archivo"><i class="material-icons">picture_as_pdf</i></a>';
+                        if(session('user')->id == $row->user_id && $row->credit_status_id == 1){
                             $buttons .= '<a onclick="credit_solicit('.$row->id.')" class="indigo-text tooltipped" data-position="bottom" data-tooltip="Solicitar Crédito" href="javascript:void(0);"><i class="material-icons">send</i></a>';
                         }else if((session('user')->role_id == 2 || session('user')->role_id == 1) && $row->credit_status_id == 2){
                             $buttons .= '

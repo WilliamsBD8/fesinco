@@ -46,11 +46,26 @@
                                     </a>
                                 </div>
                             </div>
+                            <div class="row">
+                                <div class="loading-form">
+                                    <div class="info">
+                                        <i class="material-icons rotating">refresh</i>
+                                        Cargando
+                                    </div>
+                                </div>
+
+                                <div class="error-message card-alert card red lighten-5">
+                                    <div class="card-content red-text center-align">
+                                        Error
+                                    </div>
+                                </div>
+                            </div>
                         </form>
                     </div>
                 </div>
             </div>
         </div>
+
         <div class="section table">
             
         </div>

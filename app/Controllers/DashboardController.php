@@ -337,15 +337,15 @@ class DashboardController extends BaseController
 		$type_credit = $cr_model
 			->select([
 				'credit_rates.*',
-				'security_rates.rate as secutiry_rate'
+				'security_rates.rate as security_rate'
 			])
 			->where(['credit_rates.id' => $data->type_credit_id])
 			->join('security_rates', 'security_rates.id = credit_rates.security_rates_id', 'left')
 		->first();
 
 		
-		$valor_tasa  = (float) $type_credit->rate/100;
-		$tasa_interes = $valor_tasa + (float) $type_credit->secutiry_rate;
+		$valor_tasa  = (float) $type_credit->rate / 100;
+		$tasa_interes = $valor_tasa + (float) ($type_credit->security_rate / 100);
 		$mont_value = (float) $data->value;
 		
 		$cuota = ($mont_value * ($tasa_interes * pow(1 + $tasa_interes, $data->quota_max))) / (pow(1 + $tasa_interes, $data->quota_max) - 1);
@@ -354,24 +354,13 @@ class DashboardController extends BaseController
 			'mont_value'	=> $mont_value,
 			'cuota'			=> $cuota,
 			'valor_tasa'	=> $valor_tasa,
-			'segu_tasa'		=> $type_credit->secutiry_rate,
-			'quota_max'		=> $data->quota_max
+			'segu_tasa'		=> (float) $type_credit->security_rate / 100,
+			'quota_max'		=> $data->quota_max,
+			'rate'			=> $type_credit->rate,
+			'tasa_interes'	=> $tasa_interes
 		]);
-		$mpdf = new Mpdf();
-
-		$mpdf->SetHTMLFooter('
-        	<hr>
-			<table width="100%">
-				<tr>
-					<td width="50%" align="left">Software elaborado por IPlanet Colombia SAS</td>
-					<td width="50%" align="right">Pagina {PAGENO}/{nbpg}</td>
-				</tr>
-			</table>
-		');
-
-		$mpdf->WriteHTML($page, \Mpdf\HTMLParserMode::HTML_BODY);
 		// Guardar el PDF en una variable
-		$pdfOutput = $mpdf->Output('', \Mpdf\Output\Destination::STRING_RETURN);
+		$pdfOutput = $this->generate_pdf($page);
 
 		// Convertir el PDF a base64
 		$pdfBase64 = base64_encode($pdfOutput);
@@ -382,14 +371,15 @@ class DashboardController extends BaseController
 			'credit_status_id'	=> 1,
 			'credit_rate_id'	=> $type_credit->id,
 			'quota'				=> $data->quota_max,
-			'security_rate'		=> $type_credit->secutiry_rate,
+			'security_rate'		=> $type_credit->security_rate,
 			'rate'				=> $type_credit->rate,
 			'value'				=> $data->value
 		]);
 
 		return $this->respond([
 			'pdf' 	=> $pdfBase64,
-			'page'	=> $page
+			'page'	=> $page,
+			// 'out'	=> $pdfOutput
 		]);
 	}
 
@@ -529,12 +519,6 @@ class DashboardController extends BaseController
     	return view('pages/about');
   	}
 
-	// PDF
-
-	public function generate_pdf(){
-
-	}
-
 	public function extracts_view(){
 		$ec_model = new ExtractsContributions();
 		$ew_model = new ExtractsWallet();
@@ -549,23 +533,78 @@ class DashboardController extends BaseController
 			$extract_wall->line_credit_wall = $ew_model->getLineCreditExtract($extract_wall->line_credit_extract_id);
 		}
 
+
+		$page = view("pages/pdf/extracts", [
+			"extracts_con" 	=> $extracts_con,
+			"extracts_wal" 	=> $extracts_wal,
+			"user"			=> $user,
+			"data"			=> $data
+		]);
+
+		// Guardar el PDF en una variable
+		$pdfOutput = $this->generate_pdf($page);
+
+		// Convertir el PDF a base64
+		$pdfBase64 = base64_encode($pdfOutput);
+		return $this->respond([
+			'pdf' => $pdfBase64,
+			'extracts_wal' => $extracts_wal,
+			'extracts_con'	=> $extracts_con,
+		]);
+	}
+
+	public function generate_pdf_credit($id){
+		$c_model = new Credit();
+		$u_model = new User();
+		$credit = $c_model->where(['id' => $id])->first();
+		$user = $u_model->where(['id' => $credit->user_id])->first();
+
+		$valor_tasa  = (float) $credit->rate / 100;
+		$tasa_interes = $valor_tasa + (float) ($credit->security_rate / 100);
+		$mont_value = (float) $credit->value;
+		
+		$cuota = ($mont_value * ($tasa_interes * pow(1 + $tasa_interes, (int)$credit->quota))) / (pow(1 + $tasa_interes, (int)$credit->quota) - 1);
+		$sald_fina = $mont_value;
+		$page = view('pages/pdf/simulate', [
+			'mont_value'	=> $mont_value,
+			'cuota'			=> $cuota,
+			'valor_tasa'	=> $valor_tasa,
+			'segu_tasa'		=> (float) $credit->security_rate / 100,
+			'quota_max'		=> $credit->quota,
+			'rate'			=> $credit->rate,
+			'tasa_interes'	=> $tasa_interes,
+			'user'			=> $user
+		]);
+
+		$name = $credit->credit_status_id == 1 ? "simulacion_{$id}.pdf" : ($credit->credit_status_id == 2 ? "solicitud_{$id}.pdf" : "credito_{$id}.pdf");
+
+		// Guardar el PDF en una variable
+		return $this->generate_pdf($page, "D", $name);
+
+		return $this->respond(['data' => $credit]);
+	}
+
+	
+	// PDF
+
+	private function generate_pdf($page, $return = "S", $name = ""){
 		$mpdf = new Mpdf([
-			'margin_top' => 40
+			'mode'          => 'utf-8',
+			'format'        => 'Letter',
+			"margin_left"   => 5,
+			"margin_right"  => 5,
+			"margin_top"    => 40,
+			"margin_bottom" => 20,
+			"margin_header" => 5.5
 		]);
 
 		$mpdf->SetHTMLHeader('
-			<table width="100%">
+			<table class="table-header">
 				<tr>
-					<td  align="center"><b>FONDO DE EMPLEADOS DE LA SUPERINTENDENCIA DE INDUSTRIA Y COMERCIO <br>"FESINCO"-</b></td>
+					<td width="50%" align="left"><img src="assets/img/logo-pdf.png" height="105"></td>
+					<td width="50%" align="right"><span>Fesinco <br> Versión 2</span></td>
 				</tr>
-				<tr>
-					<td align="center"><b>860.040.275-1</b></td>							
-				</tr>
-				<tr>
-					<td align="center"><b>EXTRACTO DE CUENTA CON CORTE A '."{$data->year}-{$data->mes}".'</b></td>							
-				</tr>					
 			</table>
-			<hr>
 		');
 
 		$mpdf->SetHTMLFooter('
@@ -578,23 +617,12 @@ class DashboardController extends BaseController
 			</table>
 		');
 
-		$page = view("pages/pdf/extracts", [
-			"extracts_con" 	=> $extracts_con,
-			"extracts_wal" 	=> $extracts_wal,
-			"user"			=> $user
-		]);
+		$css  = file_get_contents('assets/css/pdf.css');
 
+		$mpdf->WriteHTML($css, \Mpdf\HTMLParserMode::HEADER_CSS);
 		$mpdf->WriteHTML($page, \Mpdf\HTMLParserMode::HTML_BODY);
-		// Guardar el PDF en una variable
-		$pdfOutput = $mpdf->Output('', \Mpdf\Output\Destination::STRING_RETURN);
-
-		// Convertir el PDF a base64
-		$pdfBase64 = base64_encode($pdfOutput);
-		return $this->respond([
-			'pdf' => $pdfBase64,
-			'extracts_wal' => $extracts_wal,
-			'extracts_con'	=> $extracts_con,
-		]);
+		$output = $mpdf->Output($name, $return);
+		return $output;
 	}
 
 }

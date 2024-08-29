@@ -30,7 +30,7 @@ function send_contact(e){
         $('.sent-message').removeClass('d-block');
         // if (data.trim() == 'OK') {
             $('.sent-message').addClass('d-block');
-            thisForm.reset(); 
+            thisForm[0].reset(); 
         // } else {
         //     throw new Error(data ? data : 'Form submission failed and no error message returned from: ' + action); 
         // }
@@ -49,8 +49,11 @@ function displayError(error) {
 }
 
 function validateFormData(data) {
+    console.log(data);
     for (const key in data) {
-        if (data[key].trim() === '') {
+        if(data[key] === null)
+            return false
+        else if (data[key].trim() === '') {
             return false;
         }
     }

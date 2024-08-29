@@ -1,0 +1,65 @@
+h1, h2, h3, h4, h5, table, p{
+    font-family: Muli, sans-serif;
+}
+
+.table-header{
+    /* background-color: red; */
+    width: 100%;
+    border-bottom: 1px solid grey;
+}
+
+.table-header td.version{
+    font-size: 20px;
+    text-align: right;
+}
+
+.dates-credits{
+    width: 100%;
+    text-align: center;
+}
+
+.title{
+    font-size: 20px;
+    text-align: center;
+    font-weight: 800;
+}
+
+.sub-title{
+    font-size: 18px;
+    text-align: center;
+    font-weight: 800;
+}
+
+table{
+    width: 100%;
+    text-align: center;
+    border-collapse: collapse;
+}
+
+table thead tr{
+    border-bottom: 1px solid rgba(0,0,0, .12);
+}
+
+table thead tr th{
+    padding: 10px;
+}
+
+table tbody tr td{
+    padding: 10px;
+}
+
+.striped tbody tr:nth-child(odd) {
+    background-color: #f2f2f2; /* Color para filas impares */
+}
+
+.striped tbody tr:nth-child(even) {
+    background-color: #ffffff; /* Color para filas pares */
+}
+
+.info-user{
+    border: 1px solid gray;
+}
+
+.table-aportes td{
+    width: 50%;
+}
