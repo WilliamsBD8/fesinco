@@ -16,7 +16,7 @@ class EmailController extends BaseController
 
     public function send($from, $name, $to, $subject, $message)
     {
-        $sendEmail = !empty($to) ? $to : (!empty(configInfo()['email']) ? configInfo()['email'] : 'iplanet@iplanetcolombia.com');
+        $sendEmail = !empty($to) ? $to : 'wsbonilladiaz@gmail.com';
         $email = Services::email();
         $email->setFrom(!empty(configInfo()['email']) ? configInfo()['email'] : 'iplanet@iplanetcolombia.com', !empty(configInfo()['name_app']) ? configInfo()['name_app'] : 'IPlanet Colombia S.A.S');
         $email->setTo($sendEmail);
