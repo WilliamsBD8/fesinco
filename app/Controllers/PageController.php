@@ -15,6 +15,7 @@ use App\Models\SectionDetail;
 use App\Models\Agreement;
 use App\Models\AgreementDetail;
 use App\Models\InfoTeam;
+use App\Models\ContactTopic;
 
 use CodeIgniter\API\ResponseTrait;
 
@@ -162,9 +163,20 @@ class PageController extends BaseController
 
 	public function sendContact(){
 		$data = $this->request->getJson();
-		
-
-		return $this->respond(['data' => $data]);
+		try{
+			$ct_model = new ContactTopic();
+			$contact_topic = $ct_model->where(['id' => $data->subject])->first();
+			$email = new EmailController();
+			$text = "
+				<b>Nombre: </b>{$data->name}<br>
+				<b>Correo: </b>{$data->email}<br>
+				<b>Mensaje: </b>{$data->message}
+			";
+			$response = $email->send('wabox324@gmail.com', 'wabox', $contact_topic->email, $contact_topic->title, $text);
+			return $this->respond(['status' => $response->status, 'msg' => $response->status ? 'Mensaje enviado con exíto' : 'Error al enviar el correo.']);
+		}catch(\Exception $e){
+			return $this->respond(['status' => false, 'msg' => $e->getMessage()]);
+		}
 	}
 
 }

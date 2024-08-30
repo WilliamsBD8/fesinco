@@ -28,12 +28,12 @@ function send_contact(e){
         $('.loading').removeClass('d-block');
         $('.error-message').removeClass('d-block');
         $('.sent-message').removeClass('d-block');
-        // if (data.trim() == 'OK') {
+        if (data.status) {
             $('.sent-message').addClass('d-block');
             thisForm[0].reset(); 
-        // } else {
-        //     throw new Error(data ? data : 'Form submission failed and no error message returned from: ' + action); 
-        // }
+        } else {
+            throw new Error(data.msg); 
+        }
     })
     .catch((error) => {
         displayError(error);
