@@ -100,7 +100,7 @@
                   <li class="dropdown"><a href="<?= base_url(['section', $section->id]) ?>"><span><?= $section->title ?></span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
                     <ul>
                       <?php foreach($section->details as $detail): ?>
-                        <li><a href="<?= base_url(['section/detail', $detail->id]) ?>"><?= maxTruncate($detail->title) ?></a></li>
+                        <li><a href="<?= base_url(['section/detail', $detail->id]) ?>"><?= $detail->title ?></a></li>
                       <?php endforeach ?>
                     </ul>
                   </li>
