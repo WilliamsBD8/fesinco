@@ -136,14 +136,17 @@
   
 
   <footer id="footer" class="footer bg-secondary-primary">
-
-    <div class="entity d-flex justify-content-center align-items-center">
-
-      <h4 class="text-entity">Vigilados Superintendecia de la Economia Solidaria</h4>
-      <div class="img-entity">
-        <img src="<?= base_url(['page/img/entity', $general->entity_img]) ?>" alt="">
+    <div class="container">
+      <div class="row gy-4 justify-content-center">
+        <div class="col-lg-6 entity d-flex align-items-center justify-content-center">
+          <h4 class="text-entity text-center">Vigilados Superintendecia de la Economia Solidaria</h4>
+        </div>
+        <div class="col-lg-6">
+          <div class="img-entity  d-flex align-items-center justify-content-center">
+            <img src="<?= base_url(['page/img/entity', $general->entity_img]) ?>" alt="">
+          </div>
+        </div>
       </div>
-
     </div>
 
     <div class="container footer-top">
