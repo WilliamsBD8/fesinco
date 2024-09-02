@@ -362,8 +362,8 @@ class TableController extends BaseController
                         'addres'            => 'Dirección',
                         'phone'             => 'N° Telefono',
                         'message_whatsapp'  => 'Mensaje de whatsapp',
-                        'button_pse'        => 'Boton PSE',
-                        'link_pse'          => 'Link PSE',
+                        'entity'            => 'Entidad',
+                        'entity_img'        => 'Logo Entidad',
                     ]);
                     
                     $g_model = new General();
@@ -373,6 +373,7 @@ class TableController extends BaseController
                         $this->crud->unsetDelete();
                     }
                     $this->crud->setFieldUpload('logo', 'page/img/logos', base_url(['page/img/logos']));
+                    $this->crud->setFieldUpload('entity_img', 'page/img/entity', base_url(['page/img/entity']));
                     $this->crud->setTexteditor(['addres']);
                     break;
 
@@ -569,6 +570,18 @@ class TableController extends BaseController
                         $stateParameters->data['category_id'] = 5;
                         return $stateParameters;
                     });
+                    break;
+                
+                case 'payments':
+                    $this->crud->displayAs([
+                        'title'         => 'Titulo',
+                        'description'   => 'Descripción',
+                        'position'      => 'Posición',
+                        'status'        => 'Estado'
+                    ]);
+                    
+                    $this->crud->setFieldUpload('logo', 'page/img/payments', base_url(['page/img/payments']));
+                    $this->crud->setTexteditor(['description']);
                     break;
 
 

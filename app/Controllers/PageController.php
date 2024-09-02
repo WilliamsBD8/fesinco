@@ -16,6 +16,8 @@ use App\Models\Agreement;
 use App\Models\AgreementDetail;
 use App\Models\InfoTeam;
 use App\Models\ContactTopic;
+use App\Models\General;
+use App\Models\Payment;
 
 use CodeIgniter\API\ResponseTrait;
 
@@ -49,6 +51,13 @@ class PageController extends BaseController
 		$teams = $it_model->first();
 		$teams->teams = $it_model->getTeams();
 
+		
+		$g_model = new General();
+		$info = $g_model->first();
+
+		$p_model = new Payment();
+		$payments = $p_model->where(['status' => 'Activo'])->orderBy('position', 'ASC')->findAll();
+
 		// var_dump($publication); die;
 
     	return  view('landings/home', [
@@ -57,7 +66,9 @@ class PageController extends BaseController
 			'about'			=> $about,
 			'agreement'		=> $agreement,
 			'publication'	=> $publication,
-			'teams'			=> $teams
+			'teams'			=> $teams,
+			'general'		=> $info,
+			'payments'		=> $payments
 		]);
 	}
 
