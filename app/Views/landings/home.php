@@ -46,6 +46,41 @@
     </div> -->
     <!-- /Content PSE -->
 
+    <?php if(!empty($payments)): ?>
+        <!-- Services Section -->
+        <section id="services" class="services section light-background">
+    
+          <!-- Section Title -->
+          <div class="container section-title" data-aos="fade-up">
+          </div><!-- End Section Title -->
+    
+            <div class="container">
+    
+                <div class="row gy-4 justify-content-center">
+                    <?php foreach($payments as $payment): ?>
+                        <a href="<?= $payment->link ?>">
+                            <div class="col-lg-4 col-md-6 container-payment" data-aos="fade-up" data-aos-delay="100">
+                                    <div class="text-container">
+                                        <h2><?= $payment->title ?></h2>
+                                        <?= $payment->description ?>
+                                    </div>
+                                    <div class="image-container">
+                                        <img src="<?= base_url(['page/img/payments', $payment->logo]) ?>" alt="Descripción de la imagen">
+                                    </div>
+                            </div><!-- End recent post item-->
+                        </a>
+                    <?php endforeach ?>
+    
+                </div><!-- End Service Item -->
+    
+                </div>
+    
+            </div>
+    
+        </section><!-- /Services Section -->
+    <?php endif ?>
+
+
     
 
     <!-- Alt Services Section -->

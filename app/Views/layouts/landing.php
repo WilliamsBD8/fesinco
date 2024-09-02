@@ -116,9 +116,6 @@
                     <?php endforeach ?>
                 </ul>
             </li>
-            <?php if((isset($general->button_pse) && !empty($general->button_pse)) && (isset($general->link_pse) && !empty($general->link_pse))): ?>
-              <li><a href="<?= $general->link_pse ?>"><?= $general->button_pse ?></a></li>
-            <?php endif ?>
           </ul>
           <i class="mobile-nav-toggle d-xl-none bi bi-list" onclick="openMenu(1)"></i>
         </nav>
@@ -139,6 +136,15 @@
   
 
   <footer id="footer" class="footer bg-secondary-primary">
+
+    <div class="entity d-flex justify-content-center align-items-center">
+
+      <h4 class="text-entity">Vigilados Superintendecia de la Economia Solidaria</h4>
+      <div class="img-entity">
+        <img src="<?= base_url(['page/img/entity', $general->entity_img]) ?>" alt="">
+      </div>
+
+    </div>
 
     <div class="container footer-top">
       <div class="row gy-4 justify-content-around">
