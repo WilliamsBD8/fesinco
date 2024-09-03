@@ -56,16 +56,34 @@ class TableController extends BaseController
                         'status'            => 'Estado',
                         'photo'             => 'Foto',
                         'phone'             => 'Telefono',
+                        'created_at'        => 'Fecha de creación',
+                        'link_file'         => 'Link',
+                        'link_updated'      => 'Actualización del link'
                     ]);
-                    $this->crud->unsetColumns(['position', 'role']);
+                    $this->crud->unsetColumns(['position', 'role', 'updated_at', 'role_id']);
                     $this->crud->setActionButton('Avatar', 'fa fa-lock', function ($row) {
                         return base_url(['table', 'afiliados', $row->id]);
                     }, false);
                     $this->crud->unsetDelete();
                     $this->crud->setRelation('role_id', 'roles', 'name', ['id' => 3]);
-                    $this->crud->unsetAddFields(['position','role_id']);
-                    $this->crud->unsetEditFields(['position','role_id']);
+                    $this->crud->unsetAddFields(['position','role_id', 'created_at', 'updated_at', 'link_updated']);
+                    $this->crud->unsetEditFields(['position','role_id', 'created_at', 'updated_at', 'link_updated']);
                     $this->crud->setFieldUpload('photo', 'assets/upload/images', base_url(['assets/upload/images']));
+                    $this->crud->callbackBeforeInsert(function ($stateParameters) {
+                        $stateParameters->data['created_at'] = date('Y-m-d H:i:s');
+                        $stateParameters->data['updated_at'] = date('Y-m-d H:i:s');
+                        $stateParameters->data['role_id'] = 3;
+                        return $stateParameters;
+                    });
+                    $this->crud->callbackBeforeUpdate(function ($stateParameters) {
+                        $stateParameters->data['updated_at'] = date('Y-m-d H:i:s');
+                        return $stateParameters;
+                    });
+                    $this->crud->callbackColumn('link_file', function ($value, $row) {
+                        if(!empty($value))
+                            return "<a href='".$value."'><i class='material-icons'>insert_link</i></a>";
+                        return '';
+                    });
                     break;
                 case 'extracts':
                     $e_model = new Extract();
@@ -262,15 +280,16 @@ class TableController extends BaseController
                     $this->crud->callbackColumn('updated_at', function ($value, $row) {
                         $buttons = '
                             <a href="'.base_url(['dashboard/credits/pdf', $row->id]).'" class="pink-text tooltipped" data-position="bottom" data-tooltip="Descargar Archivo"><i class="material-icons">picture_as_pdf</i></a>
-                            <a href="'.base_url(['dashboard/credits/solicity', $row->id]).'" class="indigo-text tooltipped" data-position="bottom" data-tooltip="Descargar solicitud"><i class="material-icons">insert_drive_file</i></a>
                         ';
                         if(session('user')->id == $row->user_id && $row->credit_status_id == 1){
                             $buttons .= '<a onclick="credit_solicit('.$row->id.')" class="indigo-text tooltipped" data-position="bottom" data-tooltip="Solicitar Crédito" href="javascript:void(0);"><i class="material-icons">send</i></a>';
-                        }else if((session('user')->role_id == 2 || session('user')->role_id == 1) && $row->credit_status_id == 2){
-                            $buttons .= '
-                                <a onclick="credit_solicit('.$row->id.', 3)" class="green-text tooltipped" data-position="bottom" data-tooltip="Aprobar Crédito" href="javascript:void(0);"><i class="material-icons">check</i></a>
-                                <a onclick="credit_solicit('.$row->id.', 4)" class="red-text tooltipped" data-position="bottom" data-tooltip="Rechazar Crédito" href="javascript:void(0);"><i class="material-icons">close</i></a>
-                            ';
+                        }else if($row->credit_status_id == 2){
+                            $buttons .= '<a href="'.base_url(['dashboard/credits/solicity', $row->id]).'" class="indigo-text tooltipped" data-position="bottom" data-tooltip="Descargar solicitud"><i class="material-icons">insert_drive_file</i></a>';
+                            if((session('user')->role_id == 2 || session('user')->role_id == 1))
+                                $buttons .= '
+                                    <a onclick="credit_solicit('.$row->id.', 3)" class="green-text tooltipped" data-position="bottom" data-tooltip="Aprobar Crédito" href="javascript:void(0);"><i class="material-icons">check</i></a>
+                                    <a onclick="credit_solicit('.$row->id.', 4)" class="red-text tooltipped" data-position="bottom" data-tooltip="Rechazar Crédito" href="javascript:void(0);"><i class="material-icons">close</i></a>
+                                ';
                         }
                         return $buttons;
                     });
