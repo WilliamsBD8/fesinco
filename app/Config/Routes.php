@@ -64,6 +64,7 @@ $routes->group('dashboard', function ($routes){
 
 	// PDF
 	$routes->get('credits/pdf/(:segment)', 'DashboardController::generate_pdf_credit/$1');
+	$routes->get('credits/solicity/(:segment)', 'DashboardController::generate_pdf_solicity/$1');
 });
 
 $routes->get('/login', 'AuthController::login');

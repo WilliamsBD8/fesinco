@@ -34,8 +34,8 @@
                 </ul>
                 <!-- profile-dropdown-->
                 <ul class="dropdown-content" id="profile-dropdown">
-                    <li><a class="grey-text text-darken-1" href="<?= base_url(["perfile"]) ?>"><i class="material-icons">person_outline</i>
-                            Perfil</a></li>
+                    <!-- <li><a class="grey-text text-darken-1" href="<?= base_url(["perfile"]) ?>"><i class="material-icons">person_outline</i>
+                            Perfil</a></li> -->
                     <li><a class="grey-text text-darken-1" href="<?= base_url(["about"]) ?>"><i class="material-icons">help_outline</i> About</a></li>
                     <?php  if(session()->get('user')->role_id == 1 || session()->get('user')->role_id == 2): ?>
                         <li><a class="grey-text text-darken-1" href="<?= base_url(["config/configurations"]) ?>"><i class="material-icons">settings</i>

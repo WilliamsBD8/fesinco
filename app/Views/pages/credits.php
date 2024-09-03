@@ -29,15 +29,22 @@
                                     <input onkeyup="updateFormattedValue(this)" value="" id="value" type="text" class="validate">
                                     <label for="value">Valor</label>
                                 </div>
-                                <div class="input-field col s12 l6">
-                                    <input value="" id="pledge" type="text" class="validate">
-                                    <label for="pledge">Pignoración</label>
+                                <div class="file-field input-field col s12 l6">
+                                    <div class="btn bg-primary-secondary">
+                                        <span>Archivo adjunto</span>
+                                        <input type="file" id="file_origin" onchange="changeFile(event, '_credit')">
+                                    </div>
+                                    <div class="file-path-wrapper">
+                                        <input class="file-path validate" type="text" id="filename_origin">
+                                    </div>
+                                    <input type="hidden" id="file_credit">
+                                    <input type="hidden" id="filename_credit">
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="input-field col s12 l6">
-                                    <input value="" id="co-signer" placeholder="Si necesita codeudor, indique el nombre del asociado a FESINCO" type="text" class="validate">
-                                    <label for="co-signer">Codeudor</label>
+                                    <input value="" id="co-signer" placeholder="Si necesita garantia, indique el nombre del asociado a FESINCO" type="text" class="validate">
+                                    <label for="co-signer">Garantia</label>
                                 </div>
                                 <div class="input-field col s12 l6">
                                     <textarea id="observation" class="materialize-textarea"></textarea>

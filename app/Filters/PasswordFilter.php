@@ -12,11 +12,13 @@ class PasswordFilter implements FilterInterface
 
     public function before(RequestInterface $request, $arguments = null)
     {
-
+      
       $fechaEspecifica = new \DateTime(session('user')->password->created_at);
       $fechaActual = new \DateTime('now');
       $diferencia = $fechaEspecifica->diff($fechaActual);
       if($diferencia->days > 90){
+        return redirect()->to(base_url(['password']));
+      }else if(session('user')->password->temporary == 'Si'){
         return redirect()->to(base_url(['password']));
       }
     }
