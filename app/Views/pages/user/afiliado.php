@@ -43,11 +43,20 @@
                 </div>
             </div>
         </div>
-        <?php if($day <= 15 ): ?>
+        <?php if($day <= 15 || (!empty(session('user')->link_file)) && empty(session('user')->link_updated)): ?>
             <div class="card animate fadeUp">
                 <div class="card-content">
                     <table class="centered striped">
                         <tbody>
+                            <?php if(!empty(session('user')->link_file)): ?>
+                                <?php if(empty(session('user')->link_updated)): ?>
+                                    <tr>
+                                        <td>Actualizar datos de usuario</td>
+                                        <td><a class="btn btn-small bg-primary-secondary" target="_blank" href="<?= session('user')->link_file ?>">Actualizar</a></td>
+                                    </tr>
+                                <?php endif ?>
+                            <?php endif ?>
+                            <tr></tr>
                             <?php if($day > 10 && $day <= 15): ?>
                                 <tr>
                                     <td colspan="2" class="orange-text">Quedan solo <?= $day ?> días para cambiar su contraseña.</td>
