@@ -46,13 +46,26 @@ class DashboardController extends BaseController
 				->groupBy('credit_status_id')
 				->orderBy('credit_status.id', 'ASC')
 				->findAll();
-
 			$pqr_model = new Pqr();
+
+			$pqrs_total = $pqr_model->where(['user_id' => session('user')->id])->countAllResults();
+			$pqrs_total_mes = $pqr_model->where([
+					'user_id' => session('user')->id,
+					'MONTH(created_at)' => date('m'),
+					'YEAR(created_at)' => date('Y'),
+				])->countAllResults();
+
+			$pqrs_indicators = (object) [
+				'total'	=> $pqrs_total,
+				'mes'	=> $pqrs_total_mes
+			];
+
 			$pqrs = $pqr_model->where(['user_id' => session('user')->id])->orderBy('updated_at', 'DESC')->limit(5)->get()->getResult();
 			return  view('pages/user/afiliado', [
 				'credits'	=> $credits,
 				'day' 		=> (90 - $diferencia->days),
-				'pqrs'		=> $pqrs
+				'pqrs'		=> $pqrs,
+				'pqrs_indi'	=> $pqrs_indicators
 			]);
 		}else{
 			$u_model = new User();
@@ -388,9 +401,11 @@ class DashboardController extends BaseController
 		$type_credits = $cr_model
 			->select([
 				'credit_rates.*',
-				'section_details.title as credit_name'
+				'section_details.title as credit_name',
+				'security_rates.rate as secutiry_rate'
 			])
 			->join('section_details', 'section_details.id = credit_rates.section_detail_id', 'left')
+			->join('security_rates', 'security_rates.id = credit_rates.security_rates_id', 'left')
 		->findAll();
 		return view('pages/credits', [
 			'type_credits' => $type_credits
@@ -409,6 +424,11 @@ class DashboardController extends BaseController
 			->join('security_rates', 'security_rates.id = credit_rates.security_rates_id', 'left')
 		->first();
 
+		$base64_file = explode(',', $data->file);
+		$binaryData = base64_decode($base64_file[1]);
+		$new_name = date('y_m_d_h_i')."_".uniqid().".".explode('.', $data->filename)[1];
+		file_put_contents('upload/credits/' . $new_name, $binaryData);
+
 		
 		$valor_tasa  = (float) $type_credit->rate/100;
 		$tasa_interes = $valor_tasa + (float) $type_credit->secutiry_rate;
@@ -423,7 +443,7 @@ class DashboardController extends BaseController
 			'security_rate'		=> $type_credit->secutiry_rate,
 			'rate'				=> $type_credit->rate,
 			'value'				=> $data->value,
-			'pledge'			=> $data->pledge,
+			'file'				=> $new_name,
 			'co_signer'			=> $data->co_signer,
 			'observation'		=> $data->observation,
 		];
@@ -450,7 +470,13 @@ class DashboardController extends BaseController
 					'id' => $info->id,
 					'credit_status_id' => 2
 				];
-				if($c_model->save($d_save))
+				$credit = $c_model->where(['id' => $info->id])->first();
+				if(empty($credit->file) || $credit->file == '')
+					$d_return = [
+						'status' 	=> false,
+						'message'	=> 'Debe de cargar un archivo.'
+					];
+				else if($c_model->save($d_save))
 					$d_return = [
 						'status' 	=> true,
 						'message'	=> 'Solicitud realizada con éxito.'
@@ -584,6 +610,30 @@ class DashboardController extends BaseController
 		return $this->respond(['data' => $credit]);
 	}
 
+	public function generate_pdf_solicity($id){
+		$c_model = new Credit();
+		$u_model = new User();
+		$credit = $c_model
+			->select([
+				'credits.*',
+				'credit_rates.quota_max',
+				'section_details.title as title_section'
+			])
+			->where(['credits.id' => $id])
+			->join('credit_rates', 'credit_rates.id = credits.credit_rate_id', 'left')
+			->join('section_details', 'section_details.id = credit_rates.section_detail_id', 'left')
+			->first();
+		$user = $u_model->where(['id' => $credit->user_id])->first();
+
+		$page = view('pages/pdf/solicity', [
+			'credit' 	=> $credit,
+			'user'		=> $user
+		]);
+		
+		$this->generate_pdf($page, "D", "solicitud_{$credit->id}.pdf"); die;
+		return $this->respond($credit);
+	}
+
 	
 	// PDF
 
@@ -593,16 +643,19 @@ class DashboardController extends BaseController
 			'format'        => 'Letter',
 			"margin_left"   => 5,
 			"margin_right"  => 5,
-			"margin_top"    => 40,
-			"margin_bottom" => 20,
-			"margin_header" => 5.5
+			"margin_top"    => 28,
+			"margin_bottom" => 17,
+			"margin_header" => 0
 		]);
 
 		$mpdf->SetHTMLHeader('
 			<table class="table-header">
 				<tr>
-					<td width="50%" align="left"><img src="assets/img/logo-pdf.png" height="105"></td>
-					<td width="50%" align="right"><span>Fesinco <br> Versión 2</span></td>
+					<td class="header-logo"><img width="105px" src="assets/img/logo-pdf.png"></td>
+					<td class="header-text">
+						<h1 class="header-title">FESINCO<span class="header-span"> FONDO DE EMPLEADOS DE LA SUPERINTENDENCIA DE INDUSTRIA Y COMERCIO</span></h1>
+						<p class="header-par">SOLICITUD DE CRÉDITO CON GARANTÍA DE LIBRANZA Y PRESTACIONES SOCIALES</p>
+					</td>
 				</tr>
 			</table>
 		');

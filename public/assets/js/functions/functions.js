@@ -60,7 +60,7 @@ function changeFile(event, complemento = '') {
   const reader = new FileReader();
   reader.readAsDataURL(url);
   const data = reader.onload = () => {
-      const base64 = reader.result;
-      $(`#file${complemento}`).val(base64);
+    const base64 = reader.result;
+    $(`#file${complemento}`).val(base64);
   }
 }

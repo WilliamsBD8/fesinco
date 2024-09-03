@@ -247,14 +247,23 @@ class TableController extends BaseController
                         'rate'              => 'Tasa',
                         'value'             => 'Valor',
                         'created_at'        => 'Fecha de creación',
-                        'pledge'            => 'Pignoración',
+                        'file'              => 'Archivo',
                         'co_signer'         => 'Codeudor',
                         'observation'       => 'Observación',
                         'updated_at'        => 'Acciones'
                     ]);
 
+                    $this->crud->callbackColumn('file', function ($value, $row) {
+                        if(!empty($value))
+                            return "<a target='_blank' href='".base_url(['upload/credits', $value])."'><i class='material-icons'>attach_file</i></a>";
+                        return "";
+                    });
+
                     $this->crud->callbackColumn('updated_at', function ($value, $row) {
-                        $buttons = '<a href="'.base_url(['dashboard/credits/pdf', $row->id]).'" class="pink-text tooltipped" data-position="bottom" data-tooltip="Descargar Archivo"><i class="material-icons">picture_as_pdf</i></a>';
+                        $buttons = '
+                            <a href="'.base_url(['dashboard/credits/pdf', $row->id]).'" class="pink-text tooltipped" data-position="bottom" data-tooltip="Descargar Archivo"><i class="material-icons">picture_as_pdf</i></a>
+                            <a href="'.base_url(['dashboard/credits/solicity', $row->id]).'" class="indigo-text tooltipped" data-position="bottom" data-tooltip="Descargar solicitud"><i class="material-icons">insert_drive_file</i></a>
+                        ';
                         if(session('user')->id == $row->user_id && $row->credit_status_id == 1){
                             $buttons .= '<a onclick="credit_solicit('.$row->id.')" class="indigo-text tooltipped" data-position="bottom" data-tooltip="Solicitar Crédito" href="javascript:void(0);"><i class="material-icons">send</i></a>';
                         }else if((session('user')->role_id == 2 || session('user')->role_id == 1) && $row->credit_status_id == 2){
@@ -267,7 +276,9 @@ class TableController extends BaseController
                     });
 
                     
-                    $this->crud->editFields(['quota', 'value', 'pledge', 'co_signer', 'observation']);
+                    $this->crud->setFieldUpload('file', 'upload/credits', base_url(['upload/credits']));
+                    
+                    $this->crud->editFields(['quota', 'value', 'file', 'co_signer', 'observation']);
 
                     break;
                 case 'users':
@@ -278,16 +289,17 @@ class TableController extends BaseController
                         'phone'             => 'Teléfono',
                         'status'            => 'Estado',
                         'identification'    => 'Cédula',
-                        'photo'             => 'Foto'
+                        'photo'             => 'Foto',
+                        'created_at'        => 'Fecha de Creación'
                     ]);
                     $this->crud->setFieldUpload('photo', 'assets/img/users', base_url(['assets/img/users']));
-                    $this->crud->unsetColumns(['position', 'status', 'role_id']);
+                    $this->crud->unsetColumns(['position', 'status', 'role_id', 'updated_at']);
                     $this->crud->unsetAdd();
                     $this->crud->unsetDelete();
-                    $this->crud->unsetEditFields(['position', 'status', 'role_id']);
+                    $this->crud->unsetEditFields(['position', 'status', 'role_id', 'identification', 'created_at', 'updated_at']);
                     $this->crud->where(['id' => session('user')->id]);
                     $this->crud->uniqueFields(['phone', 'username', 'email']);
-                    $this->crud->requiredFields(['name', 'email', 'username', 'identification']);
+                    $this->crud->requiredFields(['name', 'email', 'username']);
                     $this->crud->callbackAfterUpdate(function($stateParameters) {
                         $stateParameters->data['id'] = $stateParameters->primaryKeyValue;
                         $user = new User();
@@ -300,6 +312,17 @@ class TableController extends BaseController
                         $session = session();
                         $session->set('user', $data);
                         return $stateParameters;
+                    });
+                    $this->crud->callbackBeforeUpdate(function ($info){
+                        $info->data['updated_at']   = date('Y-m-d H:i:s');
+                        $errorMessage = new \GroceryCrud\Core\Error\ErrorMessage();
+                        $name = trim($info->data['name']);
+                        $email = trim($info->data['email']);
+                        if($name == 'NN')
+                            return $errorMessage->setMessage("El Nombre no puede ser <b>NN</b>");
+                        else if($email == 'NN')
+                            return $errorMessage->setMessage("El Email no puede ser <b>NN</b>");
+                        return $info;
                     });
                     break;
 
@@ -314,13 +337,14 @@ class TableController extends BaseController
                         return base_url(['table', 'pqrs', $row->id]);
                     }, false);
 
+
                     
-                    $this->crud->unsetAddFields(['user_id', 'created_at', 'status', 'updated_at']);
-                    $this->crud->unsetEditFields(['user_id', 'created_at', 'status', 'updated_at']);
+                    $this->crud->addFields(['type', 'observation']);
+                    $this->crud->editFields(['type', 'observation']);
                     
                     $this->crud->callbackBeforeInsert(function ($stateParameters) {
-                        $stateParameters->data['created_at'] = date('Y-m-d');
-                        $stateParameters->data['updated_at'] = date('Y-m-d');
+                        $stateParameters->data['created_at'] = date('Y-m-d H:i:s');
+                        $stateParameters->data['updated_at'] = date('Y-m-d H:i:s');
                         $stateParameters->data['user_id'] = session('user')->id;
                         return $stateParameters;
                     });
@@ -332,18 +356,20 @@ class TableController extends BaseController
                     
                     $this->crud->displayAs([
                         'user_id'       => 'Usuario',
-                        'observation'   => 'PQR',
+                        'observation'   => 'PQRs',
                         'status'        => 'Estado',
                         'type'          => 'Motivo',
-                        'creadted_at'   => 'Fecha de creación',
+                        'created_at'   => 'Fecha de creación',
                         'updated_at'    => 'Fecha de respuesta'
                     ]);
 
-                    $this->crud->callbackColumn('updated_at', function($value, $row){
-                        if($row->status == 'Por revisar')
-                            return 'Sin revisar';
-                        return $value;
-                    });
+                    $this->crud->unsetColumns(['updated_at']);
+
+                    // $this->crud->callbackColumn('updated_at', function($value, $row){
+                    //     if($row->status == 'Por revisar')
+                    //         return 'Sin revisar';
+                    //     return $value;
+                    // });
 
                     
                     $this->crud->setRelation('user_id', 'users', 'name');

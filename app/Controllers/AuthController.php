@@ -177,13 +177,20 @@ class AuthController extends BaseController
         if (count($data) > 0) {
             $email = new EmailController();
             $password = $this->encript();
-            // $user->set(['password' => password_hash($password, PASSWORD_DEFAULT)]);
-            // $user->where('id', $data[0]->id);
-            // $user->update();
-            $response = $email->send('wabox324@gmail.com', 'wabox', $request->getPost('email'), 'Recuperacion de contraseña', password($password));
-            // var_dump($response); die;
-            return redirect()->to(base_url(['reset_password']))
-                ->with($response->status ? 'success' : 'danger', $response->message);
+            $password_hash = password_hash($password, PASSWORD_DEFAULT);
+            $p_model = new Password();
+            if($p_model->set(['status' => 'inactive'])->where(['user_id' => $data[0]->id, 'status' => 'active'])->update()){
+                if($p_model->save(['user_id' => $data[0]->id, 'password' => $password_hash])){
+                    $response = $email->send('wabox324@gmail.com', 'wabox', $request->getPost('email'), 'Recuperacion de contraseña', password($password));
+                    return redirect()->to(base_url(['reset_password']))
+                        ->with($response->status ? 'success' : 'danger', $response->message);
+                }else
+                    return redirect()->to(base_url(['reset_password']))
+                        ->with('danger', 'Error al actualizar la contraseña.');
+            }else{
+                return redirect()->to(base_url(['reset_password']))
+                    ->with('danger', 'Error al actualizar la contraseña.');
+            }
         } else {
             return redirect()->to(base_url(['reset_password']))
                 ->with('danger', 'No se encontró el correo electrónico.');

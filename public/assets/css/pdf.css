@@ -1,11 +1,75 @@
-h1, h2, h3, h4, h5, table, p{
-    font-family: Muli, sans-serif;
+h1, h2, h3, h4, h5, table, p, span{
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
 }
 
 .table-header{
     /* background-color: red; */
     width: 100%;
-    border-bottom: 1px solid grey;
+}
+
+.text-center{
+    text-align: center;
+}
+
+.w-100{
+    width: 100%;
+}
+
+.w-75{
+    width: 75%;
+}
+
+.w-50{
+    width: 50%;
+}
+
+.w-25{
+    width: 25%;
+}
+
+.td-border{
+    border: 1px solid #000000;
+}
+
+.b-left{
+    border-left: 1px solid #000000;
+}
+
+.b-top{
+    border-top: 1px solid #000000;
+}
+
+.b-right{
+    border-right: 1px solid #000000;
+}
+
+.b-bottom{
+    border-bottom: 1px solid #000000;
+}
+
+.td-border-bottom{
+    border-bottom: 1px solid #000000;
+}
+
+.table-header .header-text{
+    text-align: left;
+}
+
+.header-title{
+    font-size: 40px;
+    color: green;
+    letter-spacing: -4px;
+}
+
+.header-par{
+    font-size: 14px;
+    font-weight: bold;
+    color: black;
+}
+
+.header-span{
+    font-size: 12px;
+    letter-spacing: 0;
 }
 
 .table-header td.version{
@@ -32,7 +96,7 @@ h1, h2, h3, h4, h5, table, p{
 
 table{
     width: 100%;
-    text-align: center;
+    /* text-align: center; */
     border-collapse: collapse;
 }
 
@@ -62,4 +126,77 @@ table tbody tr td{
 
 .table-aportes td{
     width: 50%;
+}
+
+
+
+
+
+/* Css para las solicitudes */
+
+.table-solicity-header{
+    border: 1px solid #000000;
+}
+
+.table-solicity-header tr td:nth-child(odd){
+    border-right: 1px solid #000000;
+    width: 50%;
+}
+
+.table-solicity-header tr td{
+    padding-left: 10px;
+}
+
+.text-autorization{
+    font-weight: bold;
+    font-size: 16px;
+    margin-bottom: 0;
+    margin-top: 0;
+}
+
+.text-autorization .text-auto{
+    margin-right: 10px;
+    margin: 20px;
+    padding: 10px;
+}
+
+.info-solicitate{
+    text-align: center;
+    font-size: 20px;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.table-data{
+    margin-bottom: 0;
+
+}
+
+.table-data td{
+    border: 1px solid black;
+    /* padding: 2px 10px ; */
+    font-size: 14px;
+}
+
+.lawers{
+    font-size: 12px;
+    margin-bottom: 0;
+    margin-top: 0;
+}
+
+.info-fesinco{
+    color: green;
+    letter-spacing: 8px;
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.aprove{
+    margin-top: 2px;
+    margin-bottom: 7px;
+}
+
+.span-change{
+    font-size: 12px;
 }

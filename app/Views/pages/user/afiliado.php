@@ -12,7 +12,7 @@
             <div id="card-stats" class="pt-0">
                 <div class="row">
                     <?php foreach($credits as $key => $credit): ?>
-                        <div class="col s12 m3 l3 xl3">
+                        <div class="col s12 m3 xl<?= 12 / count($credits) ?>">
                             <div class="card <?= $credit->id == 1 ? 'gradient-45deg-amber-amber' : ($credit->id == 2 ? 'gradient-45deg-light-blue-cyan' : ($credit->id == 3 ? 'gradient-45deg-green-teal' : 'gradient-45deg-red-pink')) ?> gradient-shadow min-height-100 white-text animate fadeLeft">
                                 <div class="padding-4">
                                     <div class="row">
@@ -62,8 +62,16 @@
                 </div>
             </div>
         <?php endif ?>
-        <div class="card animate fadeUp">
+        <div class="card animate fadeUp" style="margin-bottom: 70px">
             <div class="card-content">
+                <div class="row">
+                    <div class="col s12 m6">
+                        <h6 class="center-align padding-1"><b>PQRs Total: </b> <?= $pqrs_indi->total ?></h6>
+                    </div>
+                    <div class="col s12 m6">
+                        <h6 class="center-align padding-2 border-radius-10 <?= $pqrs_indi->mes >= 5 ? ($pqrs_indi->mes >= 10 ? 'red lighten-5 red' : 'orange lighten-5 orange') : 'black' ?>-text"><b>PQRs del Mes: </b> <?= $pqrs_indi->mes ?></h6>
+                    </div>
+                </div>
                 <table class="centered striped">
                     <thead>
                         <tr>

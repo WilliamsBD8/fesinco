@@ -20,7 +20,7 @@ class Credit extends Model
         'security_rate',
         'rate',
         'value',
-        'pledge',
+        'file',
         'co_signer',
         'observation'
     ];

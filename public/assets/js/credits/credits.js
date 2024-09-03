@@ -10,6 +10,11 @@ function change_type_credit(value){
         $('#rate').val('');
         $('#value').val('');
     }
+    
+    $('#file_origin').val('');
+    $('#filename_origin').val('');
+    $('#file_credit').val('');
+    $('#filename_credit').val('');
     M.updateTextFields();
     $('.section.table').html("");
 }
@@ -23,6 +28,10 @@ function reinit(){
     $('#pledge').val('');
     $('#co-signer').val('');
     $('#observation').val('');
+    $('#file_origin').val('');
+    $('#filename_origin').val('');
+    $('#file_credit').val('');
+    $('#filename_credit').val('');
     M.updateTextFields();
     $('select').formSelect();
     $('.section.table').html("");
@@ -41,8 +50,10 @@ function as_submit(event){
     let quota_max = $('#quota_max').val();
     if(parseInt(quota_max) > parseInt(type_credit.quota_max))
         return alert('El valor de los peridos mensuales superan al permitido');
-    let valor_tasa  = type_credit.rate/100;
-    let segu_tasa = 0.0005;
+    if($('#file_credit').val() == '')
+        return alert('Debe de cargar un archivo adjunto');
+    let valor_tasa  = type_credit.rate / 100;
+    let segu_tasa = type_credit.secutiry_rate / 100;
     let tasa_interes = valor_tasa + segu_tasa;
     let cuota = (mont_value * (tasa_interes * Math.pow(1 + tasa_interes, quota_max))) / (Math.pow(1 + tasa_interes, quota_max) - 1);
 
@@ -75,7 +86,7 @@ function as_submit(event){
                 <a href="javascript:void(0);" onclick="create_credit()" class="btn bg-primary">
                     Solicitar Crédito
                 </a>
-                <table class="centered">
+                <table class="centered striped">
                     <thead>
                         <tr>
                             <th>N°</th>
@@ -156,7 +167,9 @@ async function create_credit(){
         quota_max       : quota_max,
         pledge          : $('#pledge').val(),
         co_signer       : $('#co-signer').val(),
-        observation     : $('#observation').val()
+        observation     : $('#observation').val(),
+        file            : $('#file_credit').val(),
+        filename        : $('#filename_credit').val()
     }
     let url = base_url(['dashboard/credits/create']);
     
