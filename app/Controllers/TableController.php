@@ -789,6 +789,7 @@ class TableController extends BaseController
                         $info->data['created_at']   = date('Y-m-d H:i:s');
                         $info->data['updated_at']   = date('Y-m-d H:i:s');
                         $info->data['user_id']      = $this->id;
+                        $info->data['temporary']    = 'Si';
                         $info->data['password']     = password_hash($info->data['password'], PASSWORD_DEFAULT);
                         $p_model = new Password();
                         $passwords = $p_model->where(['user_id' => $this->id, 'status' => 'active'])->findAll();
@@ -805,7 +806,8 @@ class TableController extends BaseController
                         'attempts'      => 'N° Intentos',
                         'status'        => 'Estado',
                         'created_at'    => 'Fecha de creación',
-                        'password'      => 'Contraseña'
+                        'password'      => 'Contraseña',
+                        'temporary'     => 'Temporal'
                     ]);
                     break;
                 case 'pqrs':
