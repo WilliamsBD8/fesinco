@@ -13,7 +13,7 @@ class Password extends Model
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
     protected $allowedFields    = [
-        'user_id', 'password', 'attempts', 'status'
+        'user_id', 'password', 'attempts', 'temporary', 'status'
     ];
 
     protected bool $allowEmptyInserts = false;

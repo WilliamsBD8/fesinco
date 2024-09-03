@@ -232,7 +232,8 @@ class DashboardController extends BaseController
 					$p_model = new Password();
 					$p_model->save([
 						'user_id'   => $user_id,
-						'password'  => password_hash($data[1], PASSWORD_DEFAULT)
+						'password'  => password_hash($data[1], PASSWORD_DEFAULT),
+						'temporary'	=> 'Si'
 					]);
 					$new_users++;
 				}else $user_id = $user->id;
@@ -283,7 +284,8 @@ class DashboardController extends BaseController
 						$p_model = new Password();
 						$p_model->save([
 							'user_id'   => $user_id,
-							'password'  => password_hash($data[1], PASSWORD_DEFAULT)
+							'password'  => password_hash($data[1], PASSWORD_DEFAULT),
+							'temporary'	=> 'Si'
 						]);
 						$new_users++;
 					}else $user_id = $user->id;
