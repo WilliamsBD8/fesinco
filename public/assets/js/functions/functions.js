@@ -32,13 +32,13 @@ function base_url(array = []) {
   else return `${url}${array.join('/')}`;
 }
 
-function formatPrice(price){
+function formatPrice(price, decimal = 2){
   const formatter = new Intl.NumberFormat('es-CO', {
       style: 'currency',
       currency: 'COP',
-      minimumFractionDigits: 2
+      minimumFractionDigits: decimal
   })
-  return formatter.format(price)
+  return formatter.format(parseInt(price))
 }
 
 const separador_miles = (numero) => {
@@ -56,11 +56,18 @@ function updateFormattedValue(input) {
 
 function changeFile(event, complemento = '') {
   const url = event.target.files[0];
-  $(`#filename${complemento}`).val(event.target.files[0].name);
-  const reader = new FileReader();
-  reader.readAsDataURL(url);
-  const data = reader.onload = () => {
-    const base64 = reader.result;
-    $(`#file${complemento}`).val(base64);
+  var allowedExtension = /(\.pdf)$/i;
+  if (!allowedExtension.exec(event.target.files[0].name)) {
+    $('#file_origin').val('');
+    $('#filename_origin').val('');
+    return alert('Por favor, selecciona un archivo PDF.');
+  }else{
+    $(`#filename${complemento}`).val(event.target.files[0].name);
+    const reader = new FileReader();
+    reader.readAsDataURL(url);
+    const data = reader.onload = () => {
+      const base64 = reader.result;
+      $(`#file${complemento}`).val(base64);
+    }
   }
 }

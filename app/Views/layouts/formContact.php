@@ -13,7 +13,7 @@
             <select class="form-control" name="subject" id="subject">
                 <option selected disabled>Tema *</option>
                 <?php foreach(contact_topics() as $contact): ?>
-                    <option <?= isset($tema) ? ($tema == $contact->id ? 'selected' :  'disabled') : ''?> value="<?= $contact->id ?>"><?= $contact->title ?></option>
+                    <option <?= isset($tema) ? ($tema == $contact->id ? 'selected' :  '') : ''?> value="<?= $contact->id ?>"><?= $contact->title ?></option>
                 <?php endforeach ?>
             </select>
         </div>

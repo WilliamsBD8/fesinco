@@ -200,3 +200,8 @@ table tbody tr td{
 .span-change{
     font-size: 12px;
 }
+
+.ml-2{
+    margin-left: 5px;
+    padding-left: 10px;
+}

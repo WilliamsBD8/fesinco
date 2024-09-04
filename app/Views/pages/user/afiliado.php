@@ -13,11 +13,11 @@
                 <div class="row">
                     <?php foreach($credits as $key => $credit): ?>
                         <div class="col s12 m3 xl<?= 12 / count($credits) ?>">
-                            <div class="card <?= $credit->id == 1 ? 'gradient-45deg-amber-amber' : ($credit->id == 2 ? 'gradient-45deg-light-blue-cyan' : ($credit->id == 3 ? 'gradient-45deg-green-teal' : 'gradient-45deg-red-pink')) ?> gradient-shadow min-height-100 white-text animate fadeLeft">
+                            <div class="card border-radius-10 <?= $credit->id == 1 ? 'gradient-45deg-amber-amber' : ($credit->id == 2 ? 'gradient-45deg-light-blue-cyan' : ($credit->id == 3 ? 'gradient-45deg-green-teal' : 'gradient-45deg-red-pink')) ?> gradient-shadow min-height-100 white-text animate fadeLeft">
                                 <div class="padding-4">
                                     <div class="row">
-                                        <div class="col s7 m7">
-                                            <i class="material-icons background-round mt-5">
+                                        <div class="col s12">
+                                            <!-- <i class="material-icons background-round mt-5">
                                                 <?php if($credit->id == 1): ?>
                                                     timeline
                                                 <?php elseif($credit->id == 2): ?>
@@ -27,13 +27,12 @@
                                                 <?php else: ?>
                                                     close
                                                 <?php endif ?>
-                                            </i>
-                                            <p>Créditos <?= $credit->name ?></p>
+                                            </i> -->
+                                            <h5 class="mb-0 white-text center-align">Créditos <?= $credit->name ?></h5>
                                         </div>
-                                        <div class="col s5 m5 right-align">
-                                            <h5 class="mb-0 white-text"><?= $credit->total ?></h5>
-                                            <p class="no-margin">Total</p>
-                                            <p>$ <?= number_format($credit->value, 2, ',', '.') ?></p>
+                                        <div class="col s12 center-align">
+                                            <p class="mb-0 white-text">Total: <?= $credit->total ?></p>
+                                            <p class="no-margin">Valor: <b>$ <?= number_format($credit->value, 0, ',', '.') ?></b></p>
                                         </div>
                                     </div>
                                 </div>

@@ -5,15 +5,9 @@
     </tr>
     <tr>
         <td>Bogota, <?= date('Y-m-d', strtotime($credit->created_at)) ?></td>
-        <td>$ <?= number_format($credit->value, 2, '.', ',') ?></td>
+        <td>$ <?= number_format($credit->value, 0, '.', ',') ?></td>
     </tr>
 </table>
-
-<p class="text-autorization">
-    <span class="text-auto">AUTORIZO: </span><input type="checkbox" class="input-check"> GIRAR CHEQUE CRUCE RESTRICTIVO <input type="checkbox" class="input-check"> GIRAR CHEQUE SIN CRUCE ASUMO 4 * MIL   
-    <input type="checkbox" class="input-check"> ABONO A LA CUENTA NOMINA (*)  BANCO_________________TIPO A___ C __ Nº___________________ 
-
-</p>
 
 <h2 class="info-solicitate">
     DATOS SOLICITANTE
@@ -25,19 +19,19 @@
         <td>CEDULA DE CIUDADANIA<br>N° <?= $user->identification ?></td>
     </tr>
     <tr>
-        <td>FECHA DE INGRESO<br>&nbsp;</td>
-        <td>CARGO QUE OCUPA<br>&nbsp;</td>
+        <td>FECHA DE INGRESO<br><?= $credit->date_init ?></td>
+        <td>CARGO QUE OCUPA<br><?= $credit->position ?></td>
         <td>DEPENDENCIA DONDE TRABAJA<br>&nbsp;</td>
         <td>SUELDO BASICO<br>$</td>
     </tr>
     <tr>
-        <td colspan="3">LINEA DE CREDITO:<br><?= $credit->title_section ?><br>AUTORIZO GIRAR A FAVOR DE: </td>
+        <td colspan="3">LINEA DE CREDITO: <span class="ml-2"><?= $credit->credit_name ?></span><br><br>AUTORIZO GIRAR A FAVOR DE: </td>
         <td>PLAZO SOLICITADO<br>N° MESES: <?= $credit->quota_max ?> <br> Máximo: <?= $credit->quota ?> </td>
     </tr>
 </table>
 <p class="lawers">
     •Mediante esta solicitud autorizamos al pagador de la Superintendencia de Industria y Comercio y/o del Instituto Nacional de Metrología, para retener el valor que cubra las cuotas del crédito aprobado mas sus intereses hasta su cancelación y a destinar la totalidad del mismo en el fin solicitado, a constituir las garantías exigidas y a cumplir con todas las demás obligaciones fijadas en el reglamento de crédito de FESINCO.  El cual declaramos conocer en su totalidad. Aceptamos las condiciones en que sea aprobada esta solicitud.<br>
-    •Autorizamos irrevocablemente para que con fines estadísticos de control, supervisión e información comercial y financiera. FESINCO reporte, |solicite y divulgue nuestro comportamiento comercial y financiero ante cualquier central de información y según las condiciones establecidas por FESINCO y los organismos de control respectivos, para lo cual firmamos a continuación.<br>
+    •Autorizamos irrevocablemente para que con fines estadísticos de control, supervisión e información comercial y financiera. FESINCO reporte, solicite y divulgue nuestro comportamiento comercial y financiero ante cualquier central de información y según las condiciones establecidas por FESINCO y los organismos de control respectivos, para lo cual firmamos a continuación.<br>
     •Acorde con la normatividad vigente. (Ley 1581 de 2012 y el Decreto 1377 de 2013, de la ley Hábeas data o Protección de datos)<br>
     ESTA LIBRANZA ESTA CONFORME CON LA LEY 1527 DE ABRIL DE 2012.
 </p>
@@ -100,7 +94,8 @@
         <td colspan="2"></td>
     </tr>
 </table>
-<table class="aprove">
+<br>
+<table>
     <tr>
         <td class="w-25 b-top b-bottom b-left">
             Solicitud<br>aprobada por:
@@ -111,11 +106,12 @@
             Junta Directiva <input type="checkbox">
         </td>
         <td class="w-25 b-top b-bottom b-right">FECHA: <?= date('Y-m-d') ?><br>Acta N° <?= $credit->id ?></td>
-        <td class="w-25">Garantias: _________________ ____________________________</td>
+        <td class="w-25 ml-2"> Garantias: ________________ ___________________________</td>
     </tr>
     <tr>
         <td class="td-border">Negada: <input type="checkbox"></td>
         <td colspan="4"></td>
     </tr>
 </table>
+<br>
 <span class="span-change"><b>(*) SI CAMBIO DE CUENTA DEBO INFORMAR A FESINCO </b></span>

@@ -15,6 +15,8 @@ function change_type_credit(value){
     $('#filename_origin').val('');
     $('#file_credit').val('');
     $('#filename_credit').val('');
+    $('#date_init').val('');
+    $('#position').val('');
     M.updateTextFields();
     $('.section.table').html("");
 }
@@ -32,6 +34,8 @@ function reinit(){
     $('#filename_origin').val('');
     $('#file_credit').val('');
     $('#filename_credit').val('');
+    $('#date_init').val('');
+    $('#position').val('');
     M.updateTextFields();
     $('select').formSelect();
     $('.section.table').html("");
@@ -70,12 +74,12 @@ function as_submit(event){
         table += `
             <tr>
                 <td>${index+1}</td>
-                <td>${formatPrice(sald_inic)}</td>
-                <td>${formatPrice(inte_actu)}</td>
-                <td>${formatPrice(capi_actu)}</td>
-                <td>${formatPrice(segu_actu)}</td>
-                <td>${formatPrice(cuota)}</td>
-                <td>${formatPrice(sald_fina)}</td>
+                <td>${formatPrice(sald_inic, 0)}</td>
+                <td>${formatPrice(inte_actu, 0)}</td>
+                <td>${formatPrice(capi_actu, 0)}</td>
+                <td>${formatPrice(segu_actu, 0)}</td>
+                <td>${formatPrice(cuota, 0)}</td>
+                <td>${formatPrice(sald_fina, 0)}</td>
             </tr>
         `;
     }
@@ -152,24 +156,33 @@ function as_submit(event){
 async function create_credit(){
     var credit_id = $('#type_credit_id').val();
     if(credit_id == '')
-        return alert('Debe de seleccionar un tipo de crédito');
+        return alert('Debe de seleccionar un tipo de crédito.');
     let mont_value = $('#value').val();
     if(mont_value == '')
-        return alert('Debe de ingresar un monto');
+        return alert('Debe de ingresar un monto.');
     mont_value = parseFloat(mont_value.replace(/,/g, ''));
     let type_credit = type_credits.find(t => t.id == credit_id);
     let quota_max = $('#quota_max').val();
     if(parseInt(quota_max) > parseInt(type_credit.quota_max))
-        return alert('El valor de los peridos mensuales superan al permitido');
+        return alert('El valor de los peridos mensuales superan al permitido.');
+    if($('#file_credit').val() == '')
+        return alert('Debe de cargar un archivo adjunto.');
+    
+    if($('#date_init').val() == '')
+        return alert('Debe ingresar la fecha de inicio.');
+    
+    if($('#position').val() == '')
+        return alert('Debe ingresar el cargo que ocupa.');
     let form = {
         type_credit_id  : credit_id,
         value           : mont_value,
         quota_max       : quota_max,
-        pledge          : $('#pledge').val(),
         co_signer       : $('#co-signer').val(),
         observation     : $('#observation').val(),
         file            : $('#file_credit').val(),
-        filename        : $('#filename_credit').val()
+        filename        : $('#filename_credit').val(),
+        date_init       : $('#date_init').val(),
+        position        : $('#position').val()
     }
     let url = base_url(['dashboard/credits/create']);
     

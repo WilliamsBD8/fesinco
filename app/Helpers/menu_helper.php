@@ -39,7 +39,7 @@ function submenu($refences)
         $permission = new Permission();
         $data = $permission->select('menus.*')
             ->where('role_id', session()->get('user')->role_id)
-            ->where('menus.type', 'secundario')
+            ->where(['type' => 'secundario', 'status' => 'active', 'references' => $refences])
             ->join('menus', 'menus.id = permissions.menu_id')
             ->join('roles', 'roles.id = permissions.role_id')
             ->orderBy('menus.position', 'ASC')

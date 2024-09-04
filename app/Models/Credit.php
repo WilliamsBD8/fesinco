@@ -22,7 +22,9 @@ class Credit extends Model
         'value',
         'file',
         'co_signer',
-        'observation'
+        'observation',
+        'date_init',
+        'position'
     ];
 
     protected bool $allowEmptyInserts = false;
