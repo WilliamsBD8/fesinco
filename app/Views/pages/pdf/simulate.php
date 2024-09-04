@@ -31,11 +31,11 @@
     </thead>
     <tbody>
         <tr>
-            <td>$ <?= number_format($mont_value, 2, '.', ',') ?></td>
+            <td>$ <?= number_format($mont_value, 0, '.', ',') ?></td>
             <td><?= $quota_max ?></td>
             <td><?= $rate ?>%</td>
             <td><?= $segu_tasa * 100 ?>%</td>
-            <td>$ <?= number_format($cuota, 2, '.', ',') ?></td>
+            <td>$ <?= number_format($cuota, 0, '.', ',') ?></td>
         </tr>
     </tbody>
 </table>
@@ -65,12 +65,12 @@
             ?>
             <tr>
                 <td><?= $i+1 ?></td>
-                <td>$ <?= number_format($sald_inic, 2, '.', ',') ?></td>
-                <td>$ <?= number_format($inte_actu, 2, '.', ',') ?></td>
-                <td>$ <?= number_format($capi_actu, 2, '.', ',') ?></td>
-                <td>$ <?= number_format($segu_actu, 2, '.', ',') ?></td>
-                <td>$ <?= number_format($cuota, 2, '.', ',') ?></td>
-                <td>$ <?= number_format($sald_fina, 2, '.', ',') ?></td>
+                <td>$ <?= number_format($sald_inic, 0, '.', ',') ?></td>
+                <td>$ <?= number_format($inte_actu, 0, '.', ',') ?></td>
+                <td>$ <?= number_format($capi_actu, 0, '.', ',') ?></td>
+                <td>$ <?= number_format($segu_actu, 0, '.', ',') ?></td>
+                <td>$ <?= number_format($cuota, 0, '.', ',') ?></td>
+                <td>$ <?= number_format($sald_fina, 0, '.', ',') ?></td>
             </tr>
         <?php endfor ?>
     </tbody>

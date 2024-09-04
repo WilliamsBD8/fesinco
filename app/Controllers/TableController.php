@@ -214,21 +214,21 @@ class TableController extends BaseController
                     break;
                 case 'credit_rates':
                     $this->crud->displayAs([
-                        'section_detail_id' => 'Detalle',
-                        'security_rates_id' => 'Tasa de seguridad',
-                        'rate'              => 'Tasa',
-                        'quota_max'         => 'Cuota Maxíma'
+                        'line_credit_extract_id'    => 'Linea de crédito',
+                        'security_rates_id'         => 'Tasa de seguridad',
+                        'rate'                      => 'Tasa',
+                        'quota_max'                 => 'Cuota Maxíma'
                     ]);
-                    $s_model = new Section();
-                    $sections = $s_model->where(['status' => 'active', 'credit_simulation' => 'Si'])->findAll();
-                    if(!empty($sections)){
-                        $sections_id = array_map(function($section){
-                            return $section->id;
-                        }, $sections);
-                        $this->crud->setRelation('section_detail_id', 'section_details', '{title} - {status}', ['section_id' => $sections_id]);
-                    }else{
-                        $this->crud->unsetAdd();
-                    }
+                    // $s_model = new Section();
+                    // $sections = $s_model->where(['status' => 'active', 'credit_simulation' => 'Si'])->findAll();
+                    // if(!empty($sections)){
+                    //     $sections_id = array_map(function($section){
+                    //         return $section->id;
+                    //     }, $sections);
+                        $this->crud->setRelation('line_credit_extract_id', 'line_credit_extracts', '{name} - {code}', ['status' => ['Activo']]);
+                    // }else{
+                    //     $this->crud->unsetAdd();
+                    // }
                     $this->crud->fieldType('rate', 'float');
                     $this->crud->setRelation('security_rates_id', 'security_rates', '{rate} - {status}');
 
@@ -247,14 +247,14 @@ class TableController extends BaseController
                     $this->crud->callbackColumn('credit_rate_id', function($value, $row){
                         $cr_model = new CreditRate();
                         $credit = $cr_model
-                            ->select('section_details.title')
+                            ->select('line_credit_extracts.name')
                             ->where(['credit_rates.id' => $value])
-                            ->join('section_details', 'section_details.id = credit_rates.section_detail_id', 'left')
+                            ->join('line_credit_extracts', 'line_credit_extracts.id = credit_rates.line_credit_extract_id', 'left')
                         ->first();
-                        return $credit->title;
+                        return $credit->name;
                     });
                     $this->crud->callbackColumn('value', function($value, $row){
-                        return "$ ".number_format($value, 2, '.', ',');
+                        return number_format($value, 0, '.', ',');
                     });
                     $this->crud->displayAs([
                         'user_id'           => 'Afiliado',
@@ -831,6 +831,7 @@ class TableController extends BaseController
                     break;
                 case 'pqrs':
                     $this->crud->setTable('pqr_details');
+                    $this->crud->where(['pqr_id' => $this->id]);
                     $pqr_model = new Pqr();
                     $pqr = $pqr_model->where(['id' => $this->id])->first();
                     $title = 'PQR';

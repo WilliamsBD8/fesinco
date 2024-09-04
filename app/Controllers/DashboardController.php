@@ -40,12 +40,14 @@ class DashboardController extends BaseController
 					'credit_status.name',
 					'credit_status.id'
 				])
-				->where(['credits.user_id' => session('user')->id])
-				->join('credits', 'credits.credit_status_id = credit_status.id', 'left')
+				->join('credits', 'credits.credit_status_id = credit_status.id and credits.user_id ='.session('user')->id, 'left')
 				->join('users', 'users.id = credits.user_id', 'left')
-				->groupBy('credit_status_id')
+				// ->where(['credits.user_id' => ])
+				->groupBy('credit_status.id')
 				->orderBy('credit_status.id', 'ASC')
 				->findAll();
+			// return $this->respond($credits);
+
 			$pqr_model = new Pqr();
 
 			$pqrs_total = $pqr_model->where(['user_id' => session('user')->id])->countAllResults();
@@ -337,9 +339,9 @@ class DashboardController extends BaseController
 		$type_credits = $cr_model
 			->select([
 				'credit_rates.*',
-				'section_details.title as credit_name'
+				'line_credit_extracts.name as credit_name'
 			])
-			->join('section_details', 'section_details.id = credit_rates.section_detail_id', 'left')
+			->join('line_credit_extracts', 'line_credit_extracts.id = credit_rates.line_credit_extract_id', 'left')
 		->findAll();
 		return view('pages/simulate', [
 			'type_credits' => $type_credits
@@ -403,10 +405,10 @@ class DashboardController extends BaseController
 		$type_credits = $cr_model
 			->select([
 				'credit_rates.*',
-				'section_details.title as credit_name',
+				'line_credit_extracts.name as credit_name',
 				'security_rates.rate as secutiry_rate'
 			])
-			->join('section_details', 'section_details.id = credit_rates.section_detail_id', 'left')
+			->join('line_credit_extracts', 'line_credit_extracts.id = credit_rates.line_credit_extract_id', 'left')
 			->join('security_rates', 'security_rates.id = credit_rates.security_rates_id', 'left')
 		->findAll();
 		return view('pages/credits', [
@@ -448,6 +450,8 @@ class DashboardController extends BaseController
 			'file'				=> $new_name,
 			'co_signer'			=> $data->co_signer,
 			'observation'		=> $data->observation,
+			'date_init'			=> $data->date_init,
+			'position'			=> $data->position
 		];
 		if($c_model->save($credit)){
 			return $this->respond([
@@ -619,11 +623,11 @@ class DashboardController extends BaseController
 			->select([
 				'credits.*',
 				'credit_rates.quota_max',
-				'section_details.title as title_section'
+				'line_credit_extracts.name as credit_name'
 			])
 			->where(['credits.id' => $id])
 			->join('credit_rates', 'credit_rates.id = credits.credit_rate_id', 'left')
-			->join('section_details', 'section_details.id = credit_rates.section_detail_id', 'left')
+			->join('line_credit_extracts', 'line_credit_extracts.id = credit_rates.line_credit_extract_id', 'left')
 			->first();
 		$user = $u_model->where(['id' => $credit->user_id])->first();
 
@@ -632,7 +636,7 @@ class DashboardController extends BaseController
 			'user'		=> $user
 		]);
 		
-		$this->generate_pdf($page, "D", "solicitud_{$credit->id}.pdf"); die;
+		$this->generate_pdf($page, "I", "solicitud_{$credit->id}.pdf"); die;
 		return $this->respond($credit);
 	}
 

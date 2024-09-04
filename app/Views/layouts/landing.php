@@ -204,7 +204,7 @@
 
   <!-- Scroll Top -->
   <a href="#" id="" class="scroll-top back d-flex align-items-center justify-content-center bg-secondary-primary"><i class="bi bi-arrow-up-short"></i></a>
-  <a href="https://wa.me/<?= indiPhone($general->phone, false) ?>?text=<?= $general->message_whatsapp ?>" id="" class="scroll-top whatsapp d-flex align-items-center justify-content-center bg-primary"><i class="bi bi-whatsapp"></i></a>
+  <a href="https://wa.me/<?= indiPhone($general->phone, false) ?>?text=<?= $general->message_whatsapp ?>" target="_blank" id="" class="scroll-top whatsapp d-flex align-items-center justify-content-center bg-primary"><i class="bi bi-whatsapp"></i></a>
 
   <!-- Preloader -->
   <div id="preloader"></div>

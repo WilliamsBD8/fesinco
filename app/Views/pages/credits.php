@@ -31,7 +31,7 @@
                                 </div>
                                 <div class="file-field input-field col s12 l6">
                                     <div class="btn bg-primary-secondary">
-                                        <span>Archivo adjunto</span>
+                                        <span>Desprendible de Nómina</span>
                                         <input type="file" id="file_origin" onchange="changeFile(event, '_credit')">
                                     </div>
                                     <div class="file-path-wrapper">
@@ -43,12 +43,30 @@
                             </div>
                             <div class="row">
                                 <div class="input-field col s12 l6">
-                                    <input value="" id="co-signer" placeholder="Si necesita garantia, indique el nombre del asociado a FESINCO" type="text" class="validate">
-                                    <label for="co-signer">Garantia</label>
+                                    <!-- <input value="" id="co-signer" placeholder="Si necesita garantia, indique el nombre del asociado a FESINCO" type="text" class="validate">
+                                    <label for="co-signer">Garantia</label> -->
+
+                                    <select id="co-signer">
+                                        <!-- <option value="">Seleccionar tipo de credito</option> -->
+                                        <option value="No aplica" select>No aplica</option>
+                                        <option value="Afianzadora">Afianzadora</option>
+                                        <option value="Codeudor">Codeudor</option>
+                                    </select>
+                                    <label>En caso de requerir Garantia autoriza</label>
                                 </div>
                                 <div class="input-field col s12 l6">
                                     <textarea id="observation" class="materialize-textarea"></textarea>
                                     <label for="observation">Observación</label>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="input-field col s12 l6">
+                                    <input value="" id="date_init" type="date" class="validate">
+                                    <label for="date_init">Fecha de ingreso</label>
+                                </div>
+                                <div class="input-field col s12 l6">
+                                    <input value="" id="position" type="text" class="validate">
+                                    <label for="position">Cargo que ocupa</label>
                                 </div>
                             </div>
                             <div class="row">
