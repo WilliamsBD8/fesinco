@@ -1,7 +1,7 @@
 ---
 deployment:
   tasks:
-    - export DEPLOYPATH=/home7/fesincocom/public_html/demo
+    - export DEPLOYPATH=/home7/fesincocom/public_html
     - /bin/cp -R app $DEPLOYPATH
     - /bin/cp -R public $DEPLOYPATH
     - /bin/cp -R tests $DEPLOYPATH
