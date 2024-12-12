@@ -56,7 +56,9 @@ class AuthController extends BaseController
                 $data = $user
                     ->select(['users.*', 'roles.name as role_name'])
                     ->join('roles', 'roles.id = users.role_id')
-                    ->where('username', $username)->first();
+                    // ->where('username', $username)
+                    ->where('identification', $username)
+                    ->first();
                 if ($data) {
                     if ($data->status == 'active') {
                         $data->password = $user->getPassword($data->id);
@@ -92,7 +94,7 @@ class AuthController extends BaseController
                         return redirect()->to(base_url(['login']))->with('errors', 'La cuenta no se encuentra activa.');
                     }
                 } else {
-                    return redirect()->to(base_url(['login']))->with('errors', 'Las credenciales no concuerdan.');
+                    return redirect()->to(base_url(['login']))->with('errors', 'Las credenciales no concuerdan .');
                 }
             }else {
                 return redirect()->to(base_url(['login']))->with('errors', 'Error al validar la seguridad.');

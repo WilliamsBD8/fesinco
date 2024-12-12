@@ -18,6 +18,7 @@ use App\Models\InfoTeam;
 use App\Models\ContactTopic;
 use App\Models\General;
 use App\Models\Payment;
+use App\Models\Pqr;
 
 use CodeIgniter\API\ResponseTrait;
 

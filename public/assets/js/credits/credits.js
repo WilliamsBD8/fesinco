@@ -50,6 +50,8 @@ function as_submit(event){
     if(mont_value == '')
         return alert('Debe de ingresar un monto');
     mont_value = parseFloat(mont_value.replace(/,/g, ''));
+    if(credit_id == 25 && mont_value > 15000000)
+        return alert('El limite del valor es de $15,000,000.00');
     let type_credit = type_credits.find(t => t.id == credit_id);
     let quota_max = $('#quota_max').val();
     if(parseInt(quota_max) > parseInt(type_credit.quota_max))
