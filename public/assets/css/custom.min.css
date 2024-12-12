@@ -93,7 +93,7 @@ a{
 .container-payment{
   display: flex;
   /* align-items: center; */
-  background-color: #e0e0e0; /* Fondo general del contenedor */
+  background-color: #fafff8; /* Fondo general del contenedor */
   border-radius: 20px; /* Bordes redondeados */
   padding: 20px;
   max-width: 800px;
