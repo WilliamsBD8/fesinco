@@ -7,6 +7,7 @@ use CodeIgniter\Database\Seeder;
 use App\Models\User;
 use App\Models\LineCreditExtract;
 use App\Models\ExtractsWallet;
+use App\Models\Password;
 
 class ExtractsWalletSeeder extends Seeder
 {
@@ -26,18 +27,30 @@ class ExtractsWalletSeeder extends Seeder
 			$jsonContent = file_get_contents($jsonFilePath);
 			$data = json_decode($jsonContent, true);
 			$records = $data[0]['data'] ?? [];
+			$users_null = [];
 			foreach ($records as $key => $data) {
 				$identification = $data['cedula'] ?? null;
 				if (isset($identification) && isset($users[$identification])) {
 						$data['user_id'] = $users[$identification];
 				} else {
-						$data['user_id'] = null; // O manejar esto de acuerdo a tus requisitos
+					$data['user_id'] = null;
 				}
-
+				$data['line_credit_extract_id'] = null;
 				foreach($line_credit_extracts as $line_credit){
 					if($line_credit->code == $data['codigo']){
 						$data['line_credit_extract_id'] = $line_credit->id;
 					}
+				}
+
+
+
+				if($data['line_credit_extract_id'] == null){
+					$line = ['name' => 'NN', 'code' => $data['codigo'], 'status' => 'Activo'];
+					$lce_model = new LineCreditExtract();
+					$lce_model->save($line);
+					$line_id = $lce_model->insertID();
+					$line_credit_extracts = $lce_model->where(['status' => 'Activo'])->findAll();
+					$data['line_credit_extract_id'] = $line_id;
 				}
 
 				$data['status'] = $data['estado'] == 'activo' ? 'Activo' : 'Inactivo';
@@ -50,6 +63,5 @@ class ExtractsWalletSeeder extends Seeder
 				$ew_model = new ExtractsWallet();
 				$ew_model->save($data);
 			}
-
     }
 }

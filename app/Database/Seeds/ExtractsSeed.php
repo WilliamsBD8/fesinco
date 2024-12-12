@@ -14,12 +14,12 @@ class ExtractsSeed extends Seeder
         $e_model = new Extract();
         foreach ($data as $key => $extract) {
             $e_model->save([
-                'date' => $extract[0],
-                'contributions_file' => $extract[1],
-                'wallet_file' => $extract[2],
-                'status' => $extract[3] == 'CARGADO' ? 'Cargado' : 'Para cargar',
-                'observation' => $extract[4],
-                'consecutive' => ++$key
+                'date'                  => $extract['fecha'],
+                'contributions_file'    => $extract['archivo_aportes'],
+                'wallet_file'           => $extract['archivo_cartera'],
+                'status'                => $extract['estado'] == 'CARGADO' ? 'Cargado' : 'Para cargar',
+                'observation'           => $extract['observacion'],
+                'consecutive'           => ++$key
             ]);
         }
     }

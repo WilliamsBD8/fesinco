@@ -91,6 +91,8 @@ async function as_submit(event){
     if(mont_value == '')
         return showError('Debe de ingresar un monto');
     mont_value = parseFloat(mont_value.replace(/,/g, ''));
+    if(credit_id == 25 && mont_value > 15000000)
+        return alert('El limite del valor es de $15,000,000.00');
     let type_credit = type_credits.find(t => t.id == credit_id);
     let quota_max = $('#quota_max').val();
     if(parseInt(quota_max) > parseInt(type_credit.quota_max))
@@ -104,24 +106,28 @@ async function as_submit(event){
     $('.loading-form').show();
     $('.error-message').hide();
     await proceso_fetch(url, JSON.stringify(form)).then( data => {
-        var byteCharacters = atob(data.pdf);
-        var byteNumbers = new Array(byteCharacters.length);
-        for (var i = 0; i < byteCharacters.length; i++) {
-            byteNumbers[i] = byteCharacters.charCodeAt(i);
-        }
-        var byteArray = new Uint8Array(byteNumbers);
-        var blob = new Blob([byteArray], { type: 'application/pdf' });
-        const blobUrl = window.URL.createObjectURL(blob);
-        $('.section.table').html(`
-            <div class="card">
-                <div class="card-content">
-                    <a href="${blobUrl}" class="btn bg-primary" download="simulacion.pdf">
-                        Imprimir
-                    </a>
-                    ${data.page}
+        if(data.status){
+            var byteCharacters = atob(data.pdf);
+            var byteNumbers = new Array(byteCharacters.length);
+            for (var i = 0; i < byteCharacters.length; i++) {
+                byteNumbers[i] = byteCharacters.charCodeAt(i);
+            }
+            var byteArray = new Uint8Array(byteNumbers);
+            var blob = new Blob([byteArray], { type: 'application/pdf' });
+            const blobUrl = window.URL.createObjectURL(blob);
+            $('.section.table').html(`
+                <div class="card">
+                    <div class="card-content">
+                        <a href="${blobUrl}" class="btn bg-primary" download="simulacion.pdf">
+                            Imprimir
+                        </a>
+                        ${data.page}
+                    </div>
                 </div>
-            </div>
-        `);
+            `);
+        }else{
+            alert(data.msg, red)
+        }
         $('.loading-form').hide();
     });
 }

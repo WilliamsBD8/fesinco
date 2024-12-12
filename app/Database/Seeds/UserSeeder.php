@@ -38,7 +38,8 @@ class UserSeeder extends \CodeIgniter\Database\Seeder
             $p_model = new Password();
             $p_model->save([
                 'user_id'   => $user_id,
-                'password'  => password_hash($item['clave'], PASSWORD_DEFAULT)
+                'password'  => password_hash($item['clave'], PASSWORD_DEFAULT),
+                'temporary'         => 'Si',
             ]);
         endforeach;
     }

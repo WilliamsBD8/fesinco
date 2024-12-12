@@ -24,6 +24,6 @@ class AgreementDetails extends Migration
 
     public function down()
     {
-        $this->forge->dropTable('agreement_details');
+        // $this->forge->dropTable('agreement_details');
     }
 }

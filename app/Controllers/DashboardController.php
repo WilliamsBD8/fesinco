@@ -360,6 +360,9 @@ class DashboardController extends BaseController
 			->join('security_rates', 'security_rates.id = credit_rates.security_rates_id', 'left')
 		->first();
 
+		if( (int)$data->type_credit_id == 2 && (float)$data->value > 15000000)
+				return $this->respond(['El limite del monto es de $15,000,000.00']);
+
 		
 		$valor_tasa  = (float) $type_credit->rate / 100;
 		$tasa_interes = $valor_tasa + (float) ($type_credit->security_rate / 100);
@@ -427,6 +430,9 @@ class DashboardController extends BaseController
 			->where(['credit_rates.id' => $data->type_credit_id])
 			->join('security_rates', 'security_rates.id = credit_rates.security_rates_id', 'left')
 		->first();
+
+		if( (int)$data->type_credit_id == 2 && (float)$data->value > 15000000)
+				return $this->respond(['El limite del monto es de $15,000,000.00']);
 
 		$base64_file = explode(',', $data->file);
 		$binaryData = base64_decode($base64_file[1]);
@@ -537,8 +543,8 @@ class DashboardController extends BaseController
 		$id = $id ?? session('user')->id;
 
 		$ec_model = new ExtractsContributions();
-		$fechas = $ec_model->select('YEAR(fecha) as year, MONTH(fecha) as mes, user_id as user')->distinct()->orderBy('year', 'ASC')
-		->orderBy('mes', 'ASC')->where(['user_id' => $id])->findAll();
+		$fechas = $ec_model->select('YEAR(fecha) as year, MONTH(fecha) as mes, user_id as user')->distinct()->orderBy('year', 'DESC')
+		->orderBy('mes', 'DESC')->where(['user_id' => $id])->findAll();
 		return view('pages/extracts', [
 			'fechas' => $fechas
 		]);
@@ -636,7 +642,7 @@ class DashboardController extends BaseController
 			'user'		=> $user
 		]);
 		
-		$this->generate_pdf($page, "I", "solicitud_{$credit->id}.pdf"); die;
+		$this->generate_pdf($page, "D", "solicitud_{$credit->id}.pdf"); die;
 		return $this->respond($credit);
 	}
 
@@ -660,12 +666,12 @@ class DashboardController extends BaseController
 					<td class="header-logo"><img width="105px" src="assets/img/logo-pdf.png"></td>
 					<td class="header-text">
 						<h1 class="header-title">FESINCO<span class="header-span"> FONDO DE EMPLEADOS DE LA SUPERINTENDENCIA DE INDUSTRIA Y COMERCIO</span></h1>
-						<p class="header-par">SOLICITUD DE CRÉDITO CON GARANTÍA DE LIBRANZA Y PRESTACIONES SOCIALES</p>
+						
 					</td>
 				</tr>
 			</table>
 		');
-
+// <p class="header-par">SOLICITUD DE CRÉDITO CON GARANTÍA DE LIBRANZA Y PRESTACIONES SOCIALES</p>
 		$mpdf->SetHTMLFooter('
         	<hr>
 			<table width="100%">

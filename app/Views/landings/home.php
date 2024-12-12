@@ -10,13 +10,23 @@
         <div id="hero-carousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="5000">
 
             <?php foreach ($imgs as $key => $slider): ?>
+                <?php if(empty($slider->button_title) && !empty($slider->button_link)): ?>
+                    <a href="<?= $slider->button_link ?>" class="btn-get-start ">
+                <?php endif ?>
                 <div class="carousel-item  <?= $key == 0 ? 'active' : '' ?>">
                     <img src="<?= base_url(["page/img/sliders", $slider->img]) ?>" alt="">
                     <div class="carousel-container">
                         <h2><?= $slider->title ?><br></h2>
                         <?= $slider->description ?>
+                        <?php if(!empty($slider->button_title) && !empty($slider->button_link)): ?>
+                            <a href="<?= $slider->button_link ?>" class="btn-get-started bg-primary white"><?= $slider->button_title ?></a>
+                        <?php endif ?>
                     </div>
                 </div><!-- End Carousel Item -->
+                <?php if(empty($slider->button_title) && !empty($slider->button_link)): ?>
+                    </a>
+                <?php endif ?>
+                
             <?php endforeach ?>
 
             <a class="carousel-control-prev" href="#hero-carousel" role="button" data-bs-slide="prev">

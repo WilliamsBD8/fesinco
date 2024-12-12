@@ -18,6 +18,7 @@ use App\Models\CreditRate;
 use App\Models\User;
 use App\Models\Pqr;
 use App\Models\InfoTeam;
+use App\Models\ContactTopic;
 
 use App\Models\ExtractsContributions;
 use App\Models\ExtractsWallet;
@@ -352,11 +353,38 @@ class TableController extends BaseController
                     }else{
                         $this->crud->unsetOperations();
                     }
+
                     $this->crud->setActionButton('Avatar', 'fa fa-bars', function ($row) {
                         return base_url(['table', 'pqrs', $row->id]);
                     }, false);
 
+                    $this->crud->defaultOrdering("id", "DESC");
 
+
+                    
+                    $this->crud->callbackAfterInsert(function ($stateParameters) {
+                        $email = new EmailController();
+                        $ct_model = new ContactTopic();
+                        $contact_topic = $ct_model->like("title","%pqr%")->findAll();
+                        $emails = array_map(function($obj) {
+                            return $obj->email;
+                        }, $contact_topic);
+                        $emails = ["wsbonilladiaz@gmail.com", "u20222209712@usco.edu.co"];
+                        $text = "
+                            <b>Nombre: </b>".session('user')->name."<br>
+                            <b>Correo: </b>".session('user')->email."<br>
+                            <b>Tipo de PQRS: </b>".$stateParameters->data['type']."<br>
+                            <b>Mensaje: </b>".$stateParameters->data['observation']."
+                        ";
+                        $response = $email->send('wabox324@gmail.com', 'wabox', $emails, 'Peticion PQRS', $text);
+                        // if ($stateParameters->data['status'] === 'Rejected' && $stateParameters->data['message'] === '') {
+                              // The error message as a return parameter is only available at Enterprise version
+                              $errorMessage = new \GroceryCrud\Core\Error\ErrorMessage();
+                              return $errorMessage->setMessage($text);
+                        // }
+                    
+                        return $stateParameters;
+                    });
                     
                     $this->crud->addFields(['type', 'observation']);
                     $this->crud->editFields(['type', 'observation']);
